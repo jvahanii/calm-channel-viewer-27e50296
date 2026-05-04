@@ -1,4 +1,5 @@
 import { z } from "https://deno.land/x/zod@v3.23.8/mod.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -41,7 +42,8 @@ async function ytFetch(path: string, params: Record<string, string>, key: string
   const res = await fetch(url.toString());
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`YouTube ${path} ${res.status}: ${text}`);
+    console.error("YouTube API error", path, res.status, text);
+    throw new Error("YouTube API request failed");
   }
   return res.json();
 }
@@ -49,8 +51,26 @@ async function ytFetch(path: string, params: Record<string, string>, key: string
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  // Require authenticated caller to prevent quota abuse
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return json({ error: "Unauthorized" }, 401);
+  }
+  const token = authHeader.replace("Bearer ", "");
+  const supabase = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_ANON_KEY")!,
+  );
+  const { data: userData, error: authError } = await supabase.auth.getUser(token);
+  if (authError || !userData?.user) {
+    return json({ error: "Unauthorized" }, 401);
+  }
+
   const key = Deno.env.get("YOUTUBE_API_KEY");
-  if (!key) return json({ error: "YOUTUBE_API_KEY not configured" }, 500);
+  if (!key) {
+    console.error("YOUTUBE_API_KEY not configured");
+    return json({ error: "Service unavailable" }, 500);
+  }
 
   let body: unknown;
   try {
@@ -61,7 +81,7 @@ Deno.serve(async (req) => {
 
   const parsed = BodySchema.safeParse(body);
   if (!parsed.success) {
-    return json({ error: parsed.error.flatten() }, 400);
+    return json({ error: "Invalid request" }, 400);
   }
 
   try {
@@ -85,7 +105,6 @@ Deno.serve(async (req) => {
       return json(res);
     }
 
-    // channelLatest
     const perChannel = data.perChannel ?? 5;
     const channelsRes = await ytFetch(
       "channels",
@@ -138,6 +157,6 @@ Deno.serve(async (req) => {
     return json({ items });
   } catch (err) {
     console.error("youtube fn error", err);
-    return json({ error: err instanceof Error ? err.message : "Unknown error" }, 500);
+    return json({ error: "Request failed" }, 500);
   }
 });
