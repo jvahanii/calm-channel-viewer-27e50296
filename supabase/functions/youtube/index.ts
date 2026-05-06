@@ -24,6 +24,12 @@ const BodySchema = z.discriminatedUnion("action", [
     perChannel: z.number().int().min(1).max(15).optional(),
   }),
   z.object({ action: z.literal("channelInfo"), channelId: z.string().min(1) }),
+  z.object({
+    action: z.literal("channelVideos"),
+    channelId: z.string().min(1),
+    pageToken: z.string().optional(),
+    pageSize: z.number().int().min(1).max(50).optional(),
+  }),
 ]);
 
 type YTVideo = {
@@ -103,6 +109,38 @@ Deno.serve(async (req) => {
         key,
       );
       return json(res);
+    }
+
+    if (data.action === "channelVideos") {
+      const chRes = await ytFetch(
+        "channels",
+        { part: "contentDetails,snippet", id: data.channelId },
+        key,
+      );
+      const ch = chRes.items?.[0];
+      if (!ch) return json({ items: [], nextPageToken: null });
+      const uploads = ch.contentDetails.relatedPlaylists.uploads;
+      const pageSize = data.pageSize ?? 24;
+      const params: Record<string, string> = {
+        part: "snippet,contentDetails",
+        playlistId: uploads,
+        maxResults: String(pageSize),
+      };
+      if (data.pageToken) params.pageToken = data.pageToken;
+      const res = await ytFetch("playlistItems", params, key);
+      const items: YTVideo[] = (res.items ?? []).map((it: any) => {
+        const sn = it.snippet;
+        const thumbs = sn.thumbnails ?? {};
+        return {
+          videoId: it.contentDetails?.videoId ?? sn.resourceId?.videoId,
+          title: sn.title,
+          channelId: ch.id,
+          channelTitle: ch.snippet.title,
+          thumbnail: thumbs.high?.url ?? thumbs.medium?.url ?? thumbs.default?.url ?? "",
+          publishedAt: it.contentDetails?.videoPublishedAt ?? sn.publishedAt,
+        };
+      });
+      return json({ items, nextPageToken: res.nextPageToken ?? null });
     }
 
     const perChannel = data.perChannel ?? 5;
