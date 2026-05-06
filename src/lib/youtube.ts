@@ -48,6 +48,13 @@ export const youtube = {
     call<{ items: YTVideo[] }>({ action: "channelLatest", channelIds, perChannel }),
   channelInfo: (channelId: string) =>
     call<{ items: YTChannelInfo[] }>({ action: "channelInfo", channelId }),
+  channelVideos: (channelId: string, pageToken?: string, pageSize = 24) =>
+    call<{ items: YTVideo[]; nextPageToken: string | null }>({
+      action: "channelVideos",
+      channelId,
+      pageToken,
+      pageSize,
+    }),
 };
 
 export function timeAgo(iso: string): string {
