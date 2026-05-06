@@ -9,6 +9,7 @@ import AuthPage from "./pages/Auth.tsx";
 import SearchPage from "./pages/SearchPage.tsx";
 import SubscriptionsPage from "./pages/SubscriptionsPage.tsx";
 import ChannelPage from "./pages/ChannelPage.tsx";
+import AccountPage from "./pages/AccountPage.tsx";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
             <Route path="/subscriptions" element={<ProtectedRoute><SubscriptionsPage /></ProtectedRoute>} />
             <Route path="/channel/:channelId" element={<ProtectedRoute><ChannelPage /></ProtectedRoute>} />
+            <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
