@@ -1,26 +1,48 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { useSubscriptions } from "@/hooks/useSubscriptions";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { X, Search } from "lucide-react";
+import { X, Search, Search as SearchIcon } from "lucide-react";
 
 export default function SubscriptionsPage() {
   const { list, unsubscribe } = useSubscriptions();
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     document.title = "Channels · Tuubmix";
   }, []);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return list.data ?? [];
+    return (list.data ?? []).filter((s) =>
+      s.channel_title.toLowerCase().includes(q),
+    );
+  }, [list.data, query]);
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container py-12 max-w-3xl">
         <p className="text-sm text-muted-foreground uppercase tracking-widest mb-3">Channels</p>
-        <h1 className="font-display text-4xl md:text-5xl font-semibold leading-tight mb-10">
+        <h1 className="font-display text-4xl md:text-5xl font-semibold leading-tight mb-6">
           Your subscriptions.
         </h1>
+
+        {(list.data?.length ?? 0) > 0 && (
+          <div className="relative mb-8">
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search your channels…"
+              className="h-11 pl-9"
+            />
+          </div>
+        )}
 
         {list.isLoading ? (
           <p className="text-muted-foreground">Loading…</p>
@@ -31,9 +53,11 @@ export default function SubscriptionsPage() {
               <Link to="/search"><Search className="h-4 w-4 mr-2" />Find channels</Link>
             </Button>
           </div>
+        ) : filtered.length === 0 ? (
+          <p className="text-muted-foreground">No channels match "{query}".</p>
         ) : (
           <ul className="divide-y divide-border border border-border rounded-2xl overflow-hidden bg-card">
-            {list.data!.map((s) => (
+            {filtered.map((s) => (
               <li key={s.id}>
                 <Link
                   to={`/channel/${s.channel_id}`}
