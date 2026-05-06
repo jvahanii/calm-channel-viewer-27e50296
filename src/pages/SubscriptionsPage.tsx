@@ -72,18 +72,12 @@ export default function SubscriptionsPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-12 max-w-3xl">
-        <p className="text-sm text-muted-foreground uppercase tracking-widest mb-3">Channels</p>
-        <h1 className="font-display text-4xl md:text-5xl font-semibold leading-tight mb-6">
-          Your subscriptions.
-        </h1>
+      <main className="container py-10 max-w-3xl">
+        <h1 className="font-display text-2xl font-semibold mb-6">Your channels</h1>
 
-        <section className="mb-14">
-          <p className="text-sm text-muted-foreground uppercase tracking-widest mb-3">Discover</p>
-          <h2 className="font-display text-2xl md:text-3xl font-semibold mb-5">
-            Find new channels.
-          </h2>
-          <form onSubmit={onDiscoverSubmit} className="flex gap-2 mb-6">
+        <section className="mb-10">
+          <h2 className="text-sm font-medium text-muted-foreground mb-3">Discover</h2>
+          <form onSubmit={onDiscoverSubmit} className="flex gap-2 mb-4">
             <Input
               value={discoverQuery}
               onChange={(e) => setDiscoverQuery(e.target.value)}
