@@ -29,7 +29,6 @@ export function Header() {
         {user && (
           <nav className="flex items-center gap-7">
             <NavLink to="/" end className={linkClass}>Home</NavLink>
-            <NavLink to="/search" className={linkClass}>Search</NavLink>
             <NavLink to="/subscriptions" className={linkClass}>Channels</NavLink>
             <NavLink to="/account" className={linkClass}>Account</NavLink>
             <Badge
