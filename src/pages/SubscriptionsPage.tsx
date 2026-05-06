@@ -78,62 +78,7 @@ export default function SubscriptionsPage() {
           Your subscriptions.
         </h1>
 
-        {(list.data?.length ?? 0) > 0 && (
-          <div className="relative mb-8">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-            <Input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search your channels…"
-              className="h-11 pl-9"
-            />
-          </div>
-        )}
-
-        {list.isLoading ? (
-          <p className="text-muted-foreground">Loading…</p>
-        ) : (list.data?.length ?? 0) === 0 ? (
-          <p className="text-muted-foreground mb-2">No channels yet — find some below.</p>
-        ) : filtered.length === 0 ? (
-          <p className="text-muted-foreground">No channels match "{query}".</p>
-        ) : (
-          <ul className="divide-y divide-border border border-border rounded-2xl overflow-hidden bg-card">
-            {filtered.map((s) => (
-              <li key={s.id}>
-                <Link
-                  to={`/channel/${s.channel_id}`}
-                  className="flex items-center gap-4 p-4 hover:bg-accent/50 transition-colors"
-                >
-                  {s.channel_thumbnail ? (
-                    <img src={s.channel_thumbnail} alt={s.channel_title} className="h-12 w-12 rounded-full object-cover" />
-                  ) : (
-                    <div className="h-12 w-12 rounded-full bg-muted" />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-display text-lg truncate">{s.channel_title}</h3>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      unsubscribe.mutate(s.channel_id, {
-                        onSuccess: () => toast.success("Unsubscribed"),
-                        onError: (err) => toast.error(err.message),
-                      });
-                    }}
-                  >
-                    <X className="h-4 w-4 mr-1" />
-                    Unsubscribe
-                  </Button>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <section className="mt-14">
+        <section className="mb-14">
           <p className="text-sm text-muted-foreground uppercase tracking-widest mb-3">Discover</p>
           <h2 className="font-display text-2xl md:text-3xl font-semibold mb-5">
             Find new channels.
@@ -207,6 +152,61 @@ export default function SubscriptionsPage() {
             </ul>
           )}
         </section>
+
+        {(list.data?.length ?? 0) > 0 && (
+          <div className="relative mb-8">
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search your channels…"
+              className="h-11 pl-9"
+            />
+          </div>
+        )}
+
+        {list.isLoading ? (
+          <p className="text-muted-foreground">Loading…</p>
+        ) : (list.data?.length ?? 0) === 0 ? (
+          <p className="text-muted-foreground mb-2">No channels yet.</p>
+        ) : filtered.length === 0 ? (
+          <p className="text-muted-foreground">No channels match "{query}".</p>
+        ) : (
+          <ul className="divide-y divide-border border border-border rounded-2xl overflow-hidden bg-card">
+            {filtered.map((s) => (
+              <li key={s.id}>
+                <Link
+                  to={`/channel/${s.channel_id}`}
+                  className="flex items-center gap-4 p-4 hover:bg-accent/50 transition-colors"
+                >
+                  {s.channel_thumbnail ? (
+                    <img src={s.channel_thumbnail} alt={s.channel_title} className="h-12 w-12 rounded-full object-cover" />
+                  ) : (
+                    <div className="h-12 w-12 rounded-full bg-muted" />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-display text-lg truncate">{s.channel_title}</h3>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      unsubscribe.mutate(s.channel_id, {
+                        onSuccess: () => toast.success("Unsubscribed"),
+                        onError: (err) => toast.error(err.message),
+                      });
+                    }}
+                  >
+                    <X className="h-4 w-4 mr-1" />
+                    Unsubscribe
+                  </Button>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
       </main>
     </div>
   );
