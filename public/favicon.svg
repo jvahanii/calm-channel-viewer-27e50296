@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
   <!-- Rounded square background in Tuubmix primary pink -->
-  <rect width="32" height="32" rx="6.4" ry="6.4" fill="#da0b95"/>
+  <rect width="32" height="32" rx="6.4" ry="6.4" fill="#F97316"/>
   <!-- White play triangle -->
   <polygon points="10.5,7.5 24.5,16 10.5,24.5" fill="#ffffff"/>
 </svg>
