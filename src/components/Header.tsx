@@ -1,10 +1,13 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useUserTier } from "@/hooks/useUserTier";
 import { LogOut } from "lucide-react";
 
 export function Header() {
   const { user, signOut } = useAuth();
+  const { tier, isPlus } = useUserTier();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -28,6 +31,13 @@ export function Header() {
             <NavLink to="/" end className={linkClass}>Home</NavLink>
             <NavLink to="/search" className={linkClass}>Search</NavLink>
             <NavLink to="/subscriptions" className={linkClass}>Channels</NavLink>
+            <NavLink to="/account" className={linkClass}>Account</NavLink>
+            <Badge
+              variant={isPlus ? "default" : "secondary"}
+              className="uppercase tracking-wider text-[10px]"
+            >
+              {tier}
+            </Badge>
             <Button variant="ghost" size="sm" onClick={handleSignOut}>
               <LogOut className="h-4 w-4 mr-2" />
               Sign out
