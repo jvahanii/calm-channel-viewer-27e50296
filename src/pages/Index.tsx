@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { VideoCard } from "@/components/VideoCard";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { useSubscriptions } from "@/hooks/useSubscriptions";
-import { youtube, type YTVideo } from "@/lib/youtube";
+import { type YTVideo } from "@/lib/youtube";
+import { useFeed } from "@/hooks/useFeed";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 
@@ -19,11 +19,23 @@ export default function Index() {
 
   const channelIds = (list.data ?? []).map((s) => s.channel_id);
 
-  const feed = useQuery({
-    queryKey: ["feed", channelIds],
-    enabled: channelIds.length > 0,
-    queryFn: () => youtube.channelLatest(channelIds, 5),
-  });
+  const feed = useFeed(channelIds);
+
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && feed.hasMore && !feed.isLoading && !feed.isInitialLoading) {
+          feed.loadMore();
+        }
+      },
+      { rootMargin: "600px" },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [feed.hasMore, feed.isLoading, feed.isInitialLoading, feed.loadMore]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -46,16 +58,27 @@ export default function Index() {
               <Link to="/search"><Search className="h-4 w-4 mr-2" />Search YouTube</Link>
             </Button>
           </div>
-        ) : feed.isLoading ? (
+        ) : feed.isInitialLoading && feed.items.length === 0 ? (
           <p className="text-muted-foreground">Fetching latest videos…</p>
         ) : feed.error ? (
           <p className="text-destructive">Could not load videos. Make sure YOUTUBE_API_KEY is set.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
-            {feed.data?.items.map((v) => (
-              <VideoCard key={`${v.channelId}-${v.videoId}`} video={v} onPlay={setActive} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
+              {feed.items.map((v) => (
+                <VideoCard key={`${v.channelId}-${v.videoId}`} video={v} onPlay={setActive} />
+              ))}
+            </div>
+            <div ref={sentinelRef} className="h-12" />
+            {feed.isLoading && (
+              <p className="text-center text-muted-foreground py-6">Loading more…</p>
+            )}
+            {!feed.hasMore && feed.items.length > 0 && (
+              <p className="text-center text-muted-foreground py-6 text-sm">
+                You've reached the end.
+              </p>
+            )}
+          </>
         )}
       </main>
 
