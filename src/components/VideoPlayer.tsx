@@ -1,4 +1,6 @@
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 type Props = {
   videoId: string | null;
@@ -11,6 +13,17 @@ export function VideoPlayer({ videoId, title, onClose }: Props) {
     <Dialog open={!!videoId} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-4xl p-0 overflow-hidden border-border bg-card">
         <DialogTitle className="sr-only">{title ?? "Video player"}</DialogTitle>
+        <div className="absolute top-3 left-3 z-50">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={onClose}
+            className="bg-background/80 backdrop-blur-md hover:bg-background"
+          >
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            Back
+          </Button>
+        </div>
         {videoId && (
           <div className="aspect-video w-full bg-black">
             <iframe
