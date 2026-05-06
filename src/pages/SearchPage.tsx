@@ -89,20 +89,24 @@ export default function SearchPage() {
                             onError: (e) => toast.error(e.message),
                           });
                         } else {
-                          subscribe.mutate(
-                            {
-                              channelId,
-                              channelTitle: c.snippet.title,
-                              channelThumbnail: thumb(c),
+                          const payload = {
+                            channelId,
+                            channelTitle: c.snippet.title,
+                            channelThumbnail: thumb(c),
+                          };
+                          subscribe.mutate(payload, {
+                            onSuccess: () => toast.success(`Subscribed to ${c.snippet.title}`),
+                            onError: (e) => {
+                              if (e.message.includes("Tuubmix Free")) {
+                                showUpgrade(() => {
+                                  subscribe.mutate(payload, {
+                                    onSuccess: () => toast.success(`Subscribed to ${c.snippet.title}`),
+                                    onError: (err) => toast.error(err.message),
+                                  });
+                                });
+                              } else toast.error(e.message);
                             },
-                            {
-                              onSuccess: () => toast.success(`Subscribed to ${c.snippet.title}`),
-                              onError: (e) => {
-                                if (e.message.includes("Tuubmix Free")) showUpgrade();
-                                else toast.error(e.message);
-                              },
-                            },
-                          );
+                          });
                         }
                       }}
                     >

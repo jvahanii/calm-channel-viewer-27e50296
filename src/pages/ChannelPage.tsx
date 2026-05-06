@@ -87,16 +87,24 @@ export default function ChannelPage() {
                       onSuccess: () => toast.success("Unsubscribed"),
                     });
                   } else {
-                    subscribe.mutate(
-                      { channelId, channelTitle: ch.snippet.title, channelThumbnail: thumb ?? null },
-                      {
-                        onSuccess: () => toast.success(`Subscribed to ${ch.snippet.title}`),
-                        onError: (e) => {
-                          if (e.message.includes("Tuubmix Free")) showUpgrade();
-                          else toast.error(e.message);
-                        },
+                    const payload = {
+                      channelId,
+                      channelTitle: ch.snippet.title,
+                      channelThumbnail: thumb ?? null,
+                    };
+                    subscribe.mutate(payload, {
+                      onSuccess: () => toast.success(`Subscribed to ${ch.snippet.title}`),
+                      onError: (e) => {
+                        if (e.message.includes("Tuubmix Free")) {
+                          showUpgrade(() => {
+                            subscribe.mutate(payload, {
+                              onSuccess: () => toast.success(`Subscribed to ${ch.snippet.title}`),
+                              onError: (err) => toast.error(err.message),
+                            });
+                          });
+                        } else toast.error(e.message);
                       },
-                    );
+                    });
                   }
                 }}
               >

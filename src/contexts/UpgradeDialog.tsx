@@ -1,5 +1,4 @@
 import { createContext, useCallback, useContext, useState, ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -10,14 +9,42 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
-type Ctx = { showUpgrade: () => void };
+type Ctx = { showUpgrade: (onUpgraded?: () => void) => void };
 const UpgradeCtx = createContext<Ctx | undefined>(undefined);
 
 export function UpgradeDialogProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
-  const navigate = useNavigate();
-  const showUpgrade = useCallback(() => setOpen(true), []);
+  const [upgrading, setUpgrading] = useState(false);
+  const [onUpgraded, setOnUpgraded] = useState<(() => void) | null>(null);
+  const { user } = useAuth();
+  const qc = useQueryClient();
+
+  const showUpgrade = useCallback((cb?: () => void) => {
+    setOnUpgraded(() => cb ?? null);
+    setOpen(true);
+  }, []);
+
+  const handleUpgrade = async () => {
+    if (!user) return;
+    setUpgrading(true);
+    const { error } = await supabase
+      .from("user_roles")
+      .insert({ user_id: user.id, role: "plus" });
+    setUpgrading(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    await qc.invalidateQueries({ queryKey: ["user_tier", user.id] });
+    toast.success("Welcome to Tuubmix Plus!");
+    setOpen(false);
+    onUpgraded?.();
+  };
 
   return (
     <UpgradeCtx.Provider value={{ showUpgrade }}>
@@ -39,16 +66,11 @@ export function UpgradeDialogProvider({ children }: { children: ReactNode }) {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-2">
-            <Button variant="ghost" onClick={() => setOpen(false)}>
+            <Button variant="ghost" onClick={() => setOpen(false)} disabled={upgrading}>
               Maybe later
             </Button>
-            <Button
-              onClick={() => {
-                setOpen(false);
-                navigate("/account");
-              }}
-            >
-              Upgrade to Plus
+            <Button onClick={handleUpgrade} disabled={upgrading}>
+              {upgrading ? "Upgrading…" : "Upgrade to Plus — free"}
             </Button>
           </DialogFooter>
         </DialogContent>
