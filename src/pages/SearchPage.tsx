@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { youtube, type YTSearchItem, timeAgo } from "@/lib/youtube";
 import { useSubscriptions } from "@/hooks/useSubscriptions";
+import { useUpgradeDialog } from "@/contexts/UpgradeDialog";
 import { toast } from "sonner";
 import { Play, Plus, Check, Search as SearchIcon } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -14,6 +15,7 @@ export default function SearchPage() {
   const [q, setQ] = useState("");
   const [active, setActive] = useState<{ videoId: string; title: string } | null>(null);
   const { subscribe, unsubscribe, isSubscribed } = useSubscriptions();
+  const { showUpgrade } = useUpgradeDialog();
 
   useEffect(() => {
     document.title = "Search · Tuubmix";
@@ -95,7 +97,10 @@ export default function SearchPage() {
                             },
                             {
                               onSuccess: () => toast.success(`Subscribed to ${c.snippet.title}`),
-                              onError: (e) => toast.error(e.message),
+                              onError: (e) => {
+                                if (e.message.includes("Tuubmix Free")) showUpgrade();
+                                else toast.error(e.message);
+                              },
                             },
                           );
                         }
