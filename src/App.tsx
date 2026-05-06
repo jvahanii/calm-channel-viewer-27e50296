@@ -11,6 +11,7 @@ import SubscriptionsPage from "./pages/SubscriptionsPage.tsx";
 import ChannelPage from "./pages/ChannelPage.tsx";
 import AccountPage from "./pages/AccountPage.tsx";
 import { AuthProvider } from "./contexts/AuthContext";
+import { UpgradeDialogProvider } from "./contexts/UpgradeDialog";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -22,7 +23,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
+          <UpgradeDialogProvider>
+            <Routes>
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
@@ -30,7 +32,8 @@ const App = () => (
             <Route path="/channel/:channelId" element={<ProtectedRoute><ChannelPage /></ProtectedRoute>} />
             <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
-          </Routes>
+            </Routes>
+          </UpgradeDialogProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
