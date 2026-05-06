@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
@@ -13,20 +13,11 @@ import { X, Search as SearchIcon, Plus, Check } from "lucide-react";
 export default function SubscriptionsPage() {
   const { list, subscribe, unsubscribe, isSubscribed } = useSubscriptions();
   const { showUpgrade } = useUpgradeDialog();
-  const [query, setQuery] = useState("");
   const [discoverQuery, setDiscoverQuery] = useState("");
 
   useEffect(() => {
     document.title = "Channels · Tuubmix";
   }, []);
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return list.data ?? [];
-    return (list.data ?? []).filter((s) =>
-      s.channel_title.toLowerCase().includes(q),
-    );
-  }, [list.data, query]);
 
   const discover = useMutation({
     mutationFn: () => youtube.search(discoverQuery),
@@ -147,27 +138,13 @@ export default function SubscriptionsPage() {
           )}
         </section>
 
-        {(list.data?.length ?? 0) > 0 && (
-          <div className="relative mb-8">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-            <Input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search your channels…"
-              className="h-11 pl-9"
-            />
-          </div>
-        )}
-
         {list.isLoading ? (
           <p className="text-muted-foreground">Loading…</p>
         ) : (list.data?.length ?? 0) === 0 ? (
           <p className="text-muted-foreground mb-2">No channels yet.</p>
-        ) : filtered.length === 0 ? (
-          <p className="text-muted-foreground">No channels match "{query}".</p>
         ) : (
           <ul className="divide-y divide-border border border-border rounded-2xl overflow-hidden bg-card">
-            {filtered.map((s) => (
+            {(list.data ?? []).map((s) => (
               <li key={s.id}>
                 <Link
                   to={`/channel/${s.channel_id}`}
