@@ -41,7 +41,14 @@ export function useSubscriptions() {
         channel_title: input.channelTitle,
         channel_thumbnail: input.channelThumbnail ?? null,
       });
-      if (error) throw error;
+      if (error) {
+        if (error.message?.includes("Free tier")) {
+          throw new Error(
+            "You're on Tuubmix Free — only 1 channel allowed. Upgrade to Plus for unlimited subscriptions.",
+          );
+        }
+        throw error;
+      }
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["subscriptions", user?.id] }),
   });
