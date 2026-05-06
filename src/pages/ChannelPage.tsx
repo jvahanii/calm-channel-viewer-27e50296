@@ -6,6 +6,7 @@ import { VideoCard } from "@/components/VideoCard";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { youtube, type YTVideo } from "@/lib/youtube";
 import { useSubscriptions } from "@/hooks/useSubscriptions";
+import { useUpgradeDialog } from "@/contexts/UpgradeDialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Plus, Check } from "lucide-react";
@@ -14,6 +15,7 @@ export default function ChannelPage() {
   const { channelId } = useParams<{ channelId: string }>();
   const [active, setActive] = useState<YTVideo | null>(null);
   const { subscribe, unsubscribe, isSubscribed } = useSubscriptions();
+  const { showUpgrade } = useUpgradeDialog();
 
   const info = useQuery({
     queryKey: ["channelInfo", channelId],
@@ -87,7 +89,13 @@ export default function ChannelPage() {
                   } else {
                     subscribe.mutate(
                       { channelId, channelTitle: ch.snippet.title, channelThumbnail: thumb ?? null },
-                      { onSuccess: () => toast.success(`Subscribed to ${ch.snippet.title}`) },
+                      {
+                        onSuccess: () => toast.success(`Subscribed to ${ch.snippet.title}`),
+                        onError: (e) => {
+                          if (e.message.includes("Tuubmix Free")) showUpgrade();
+                          else toast.error(e.message);
+                        },
+                      },
                     );
                   }
                 }}
