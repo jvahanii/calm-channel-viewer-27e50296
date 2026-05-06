@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserTier } from "@/hooks/useUserTier";
@@ -7,11 +7,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function AccountPage() {
   const { user } = useAuth();
   const { tier, isPlus, isLoading } = useUserTier();
   const { list } = useSubscriptions();
+  const qc = useQueryClient();
+  const [upgrading, setUpgrading] = useState(false);
 
   useEffect(() => {
     document.title = "Account · Tuubmix";
@@ -19,6 +23,21 @@ export default function AccountPage() {
 
   const count = list.data?.length ?? 0;
   const limit = isPlus ? "Unlimited" : "1";
+
+  const handleUpgrade = async () => {
+    if (!user) return;
+    setUpgrading(true);
+    const { error } = await supabase
+      .from("user_roles")
+      .insert({ user_id: user.id, role: "plus" });
+    setUpgrading(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Welcome to Tuubmix Plus!");
+    qc.invalidateQueries({ queryKey: ["user_tier", user.id] });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -65,9 +84,12 @@ export default function AccountPage() {
             <p className="text-muted-foreground mb-5">
               Subscribe to as many channels as you like. No limits.
             </p>
-            <Button onClick={() => toast.info("Plus payments coming soon.")}>
-              Upgrade to Plus
+            <Button onClick={handleUpgrade} disabled={upgrading}>
+              {upgrading ? "Upgrading…" : "Upgrade to Plus — free"}
             </Button>
+            <p className="text-xs text-muted-foreground mt-3">
+              Free during early access. Payments coming soon.
+            </p>
           </div>
         )}
       </main>
