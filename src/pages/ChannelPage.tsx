@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
 import { VideoCard } from "@/components/VideoCard";
 import { VideoPlayer } from "@/components/VideoPlayer";
@@ -21,11 +21,35 @@ export default function ChannelPage() {
     queryFn: () => youtube.channelInfo(channelId!),
   });
 
-  const videos = useQuery({
+  const videos = useInfiniteQuery({
     queryKey: ["channelVideos", channelId],
     enabled: !!channelId,
-    queryFn: () => youtube.channelLatest([channelId!], 12),
+    initialPageParam: undefined as string | undefined,
+    queryFn: ({ pageParam }) => youtube.channelVideos(channelId!, pageParam, 24),
+    getNextPageParam: (last) => last.nextPageToken ?? undefined,
   });
+
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (
+          entries[0].isIntersecting &&
+          videos.hasNextPage &&
+          !videos.isFetchingNextPage
+        ) {
+          videos.fetchNextPage();
+        }
+      },
+      { rootMargin: "400px" },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [videos.hasNextPage, videos.isFetchingNextPage, videos.fetchNextPage, videos]);
+
+  const allVideos = videos.data?.pages.flatMap((p) => p.items) ?? [];
 
   const ch = info.data?.items?.[0];
 
@@ -79,11 +103,22 @@ export default function ChannelPage() {
         {videos.isLoading ? (
           <p className="text-muted-foreground">Loading videos…</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
-            {videos.data?.items.map((v) => (
-              <VideoCard key={v.videoId} video={v} onPlay={setActive} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
+              {allVideos.map((v) => (
+                <VideoCard key={v.videoId} video={v} onPlay={setActive} />
+              ))}
+            </div>
+            <div ref={sentinelRef} className="h-12" />
+            {videos.isFetchingNextPage && (
+              <p className="text-center text-muted-foreground py-6">Loading more…</p>
+            )}
+            {!videos.hasNextPage && allVideos.length > 0 && (
+              <p className="text-center text-muted-foreground py-6 text-sm">
+                You've reached the end.
+              </p>
+            )}
+          </>
         )}
       </main>
 
