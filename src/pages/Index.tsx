@@ -23,6 +23,7 @@ export default function Index() {
 
   const feed = useFeed(channelIds);
   const { hiddenIds, showHidden } = useHiddenVideos();
+  const showingHiddenOnly = showHidden && hiddenIds.size > 0;
   const visibleItems = showHidden
     ? feed.items.filter((v) => hiddenIds.has(v.videoId))
     : feed.items.filter((v) => !hiddenIds.has(v.videoId));
@@ -33,7 +34,13 @@ export default function Index() {
     if (!el) return;
     const obs = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && feed.hasMore && !feed.isLoading && !feed.isInitialLoading) {
+        if (
+          entries[0].isIntersecting &&
+          feed.hasMore &&
+          !feed.isLoading &&
+          !feed.isInitialLoading &&
+          !(showHidden && hiddenIds.size === 0)
+        ) {
           feed.loadMore();
         }
       },
@@ -41,7 +48,7 @@ export default function Index() {
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, [feed.hasMore, feed.isLoading, feed.isInitialLoading, feed.loadMore]);
+  }, [feed.hasMore, feed.isLoading, feed.isInitialLoading, feed.loadMore, showHidden, hiddenIds.size]);
 
   return (
     <div className="min-h-screen bg-background">
