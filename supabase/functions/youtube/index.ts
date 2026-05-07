@@ -225,6 +225,14 @@ Deno.serve(async (req) => {
       }
     });
 
+    const durations = await fetchDurations(
+      items.map((v) => v.videoId).filter(Boolean),
+      key,
+    );
+    for (const v of items) {
+      v.duration = durations.get(v.videoId);
+    }
+
     items.sort(
       (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
     );
