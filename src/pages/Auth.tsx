@@ -34,8 +34,6 @@ export default function AuthPage() {
     navigate("/");
   };
 
-  const SITE_URL = "https://tuubimix.com";
-
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
@@ -43,7 +41,7 @@ export default function AuthPage() {
       email,
       password,
       options: {
-        emailRedirectTo: SITE_URL,
+        emailRedirectTo: window.location.origin,
         data: { display_name: displayName || email.split("@")[0] },
       },
     });
@@ -55,7 +53,7 @@ export default function AuthPage() {
   const handleGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: SITE_URL },
+      options: { redirectTo: window.location.origin },
     });
     if (error) toast.error(error.message);
   };
