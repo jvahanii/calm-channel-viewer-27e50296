@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      hidden_videos: {
+        Row: {
+          channel_id: string
+          channel_title: string
+          created_at: string
+          id: string
+          published_at: string | null
+          user_id: string
+          video_id: string
+          video_thumbnail: string | null
+          video_title: string
+        }
+        Insert: {
+          channel_id: string
+          channel_title: string
+          created_at?: string
+          id?: string
+          published_at?: string | null
+          user_id: string
+          video_id: string
+          video_thumbnail?: string | null
+          video_title: string
+        }
+        Update: {
+          channel_id?: string
+          channel_title?: string
+          created_at?: string
+          id?: string
+          published_at?: string | null
+          user_id?: string
+          video_id?: string
+          video_thumbnail?: string | null
+          video_title?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
