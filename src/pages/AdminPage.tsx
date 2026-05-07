@@ -275,6 +275,22 @@ export default function AdminPage() {
               </div>
             </div>
 
+            <div>
+              <Label htmlFor="cdays">Subscription length (days)</Label>
+              <Input
+                id="cdays"
+                type="number"
+                min={1}
+                value={subscriptionDays}
+                onChange={(e) => setSubscriptionDays(e.target.value)}
+                placeholder="e.g. 30"
+                className="mt-1 max-w-xs"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                How long the campaign channel stays in a user's subscriptions after they subscribe. Leave empty for no auto-expiry.
+              </p>
+            </div>
+
             <div className="flex gap-2 pt-2">
               <Button onClick={onCreate} disabled={saving}>
                 {saving ? "Creating…" : "Create campaign"}
