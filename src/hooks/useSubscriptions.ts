@@ -9,6 +9,8 @@ export type Subscription = {
   channel_title: string;
   channel_thumbnail: string | null;
   created_at: string;
+  expires_at: string | null;
+  campaign_id: string | null;
 };
 
 export function useSubscriptions() {
