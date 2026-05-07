@@ -13,6 +13,7 @@ export type Campaign = {
   ends_at: string;
   audience: "free" | "all";
   is_active: boolean;
+  subscription_days: number | null;
   created_at: string;
   updated_at: string;
 };
