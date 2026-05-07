@@ -12,6 +12,10 @@ import {
   Shield,
   Crown,
   ArrowRight,
+  Settings,
+  CalendarRange,
+  Users,
+  Power,
 } from "lucide-react";
 
 const sections = [
@@ -49,6 +53,39 @@ const sections = [
     icon: Shield,
     title: "Tietosi",
     body: "Tilaukset ja piilotukset ovat henkilökohtaisia ja näkyvät vain sinulle. Voit poistua koska tahansa Account-sivulta.",
+  },
+];
+
+const adminSections = [
+  {
+    icon: Settings,
+    title: "Admin-näkymä",
+    body: "Superuser-tason käyttäjät näkevät Header-valikossa Admin-linkin. Sieltä hallitaan kampanjoita ja niiden voimassaoloa.",
+  },
+  {
+    icon: Search,
+    title: "Kanavan valinta",
+    body: "Hae YouTube-kanava nimellä ja valitse hakutuloksista. Valittu kanava liitetään luotavaan kampanjaan.",
+  },
+  {
+    icon: CalendarRange,
+    title: "Kampanjan kesto",
+    body: "Aseta alkamis- ja päättymispäivä. Tällä välillä kampanja näkyy bannerina käyttäjille ja kanavan voi tilata maksutta.",
+  },
+  {
+    icon: Users,
+    title: "Yleisö",
+    body: "Valitse näkyykö kampanja vain Free-tason käyttäjille vai kaikille. Free-käyttäjät voivat tilata kampanjakanavan ilman että se kuluttaa heidän 1-kanavan kiintiötään.",
+  },
+  {
+    icon: Crown,
+    title: "Tilauksen voimassaolo (päivinä)",
+    body: "Määritä montako päivää kampanjasta tilattu kanava pysyy käyttäjän tilauksissa. Aika alkaa tilaushetkestä ja päätyttyään tilaus poistetaan automaattisesti.",
+  },
+  {
+    icon: Power,
+    title: "Hallinnointi",
+    body: "Kampanja voidaan poistaa käytöstä virtanapilla tai poistaa kokonaan roskakorista. Aktiivisuus, tila (Live / Scheduled / Ended) ja yleisö näkyvät kampanjalistauksessa.",
   },
 ];
 
@@ -112,6 +149,36 @@ export default function GuidePage() {
               </div>
             </section>
           ))}
+        </div>
+
+        <div className="mt-16">
+          <p className="text-xs uppercase tracking-widest text-primary mb-3 flex items-center gap-2">
+            <Settings className="h-3.5 w-3.5" /> Adminille
+          </p>
+          <h2 className="font-display text-3xl md:text-4xl font-semibold leading-tight mb-3">
+            Kampanjoiden hallinta.
+          </h2>
+          <p className="text-muted-foreground mb-8 max-w-2xl">
+            Nämä toiminnot ovat saatavilla superuser-tason käyttäjille. Ohje on
+            näkyvissä kaikille avoimuuden vuoksi.
+          </p>
+
+          <div className="space-y-6">
+            {adminSections.map(({ icon: Icon, title, body }) => (
+              <section
+                key={title}
+                className="flex gap-5 p-6 rounded-2xl border border-border bg-card"
+              >
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <div>
+                  <h3 className="font-display text-xl mb-1">{title}</h3>
+                  <p className="text-muted-foreground leading-relaxed">{body}</p>
+                </div>
+              </section>
+            ))}
+          </div>
         </div>
 
         {!user && (
