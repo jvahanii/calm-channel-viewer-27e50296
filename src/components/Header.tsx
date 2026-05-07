@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useUserTier } from "@/hooks/useUserTier";
-import { LogOut, EyeOff, Sparkles } from "lucide-react";
+import { LogOut, EyeOff, Sparkles, BookOpen } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useHiddenVideos } from "@/contexts/HiddenVideos";
@@ -35,6 +35,11 @@ export function Header() {
             <NavLink to="/" end className={linkClass}>Home</NavLink>
             <NavLink to="/subscriptions" className={linkClass}>Channels</NavLink>
             <NavLink to="/account" className={linkClass}>Account</NavLink>
+            <NavLink to="/guide" className={linkClass}>
+              <span className="inline-flex items-center gap-1">
+                <BookOpen className="h-3.5 w-3.5" />Guide
+              </span>
+            </NavLink>
             {isSuperuser && (
               <NavLink to="/admin" className={linkClass}>
                 <span className="inline-flex items-center gap-1">
