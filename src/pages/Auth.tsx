@@ -206,6 +206,11 @@ export default function AuthPage() {
               <p className="mt-6 text-center text-xs text-muted-foreground">
                 By continuing you agree to our calm-by-default principles.
               </p>
+              <p className="mt-3 text-center text-xs">
+                <Link to="/guide" className="text-primary hover:underline">
+                  Read the user guide →
+                </Link>
+              </p>
             </div>
           </motion.div>
         </main>
