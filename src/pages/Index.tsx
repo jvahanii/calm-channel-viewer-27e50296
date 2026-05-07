@@ -8,6 +8,7 @@ import { type YTVideo } from "@/lib/youtube";
 import { useFeed } from "@/hooks/useFeed";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
+import { useHiddenVideos } from "@/contexts/HiddenVideos";
 
 export default function Index() {
   const { list } = useSubscriptions();
@@ -20,6 +21,10 @@ export default function Index() {
   const channelIds = (list.data ?? []).map((s) => s.channel_id);
 
   const feed = useFeed(channelIds);
+  const { hiddenIds, showHidden } = useHiddenVideos();
+  const visibleItems = showHidden
+    ? feed.items
+    : feed.items.filter((v) => !hiddenIds.has(v.videoId));
 
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
@@ -65,7 +70,7 @@ export default function Index() {
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
-              {feed.items.map((v) => (
+              {visibleItems.map((v) => (
                 <VideoCard key={`${v.channelId}-${v.videoId}`} video={v} onPlay={setActive} />
               ))}
             </div>
