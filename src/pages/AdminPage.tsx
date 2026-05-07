@@ -43,6 +43,7 @@ export default function AdminPage() {
   const [audience, setAudience] = useState<"free" | "all">("free");
   const [startsAt, setStartsAt] = useState<Date>(new Date());
   const [endsAt, setEndsAt] = useState<Date | undefined>();
+  const [subscriptionDays, setSubscriptionDays] = useState<string>("30");
   const [channel, setChannel] = useState<ChannelPick | null>(null);
   const [search, setSearch] = useState("");
   const [searching, setSearching] = useState(false);
@@ -86,6 +87,7 @@ export default function AdminPage() {
     setAudience("free");
     setStartsAt(new Date());
     setEndsAt(undefined);
+    setSubscriptionDays("30");
     setChannel(null);
     setSearch("");
     setResults([]);
@@ -95,6 +97,10 @@ export default function AdminPage() {
     if (!channel) return toast.error("Pick a channel");
     if (!endsAt) return toast.error("Pick an end date");
     if (!title.trim()) return toast.error("Title is required");
+    const days = subscriptionDays.trim() === "" ? null : Number(subscriptionDays);
+    if (days !== null && (!Number.isFinite(days) || days <= 0)) {
+      return toast.error("Subscription days must be a positive number");
+    }
     setSaving(true);
     const { error } = await supabase.from("campaigns").insert({
       created_by: user.id,
@@ -107,6 +113,7 @@ export default function AdminPage() {
       ends_at: endsAt.toISOString(),
       audience,
       is_active: true,
+      subscription_days: days,
     });
     setSaving(false);
     if (error) return toast.error(error.message);
