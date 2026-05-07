@@ -10,6 +10,7 @@ import { useUpgradeDialog } from "@/contexts/UpgradeDialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Plus, Check } from "lucide-react";
+import { useHiddenVideos } from "@/contexts/HiddenVideos";
 
 export default function ChannelPage() {
   const { channelId } = useParams<{ channelId: string }>();
@@ -52,6 +53,8 @@ export default function ChannelPage() {
   }, [videos.hasNextPage, videos.isFetchingNextPage, videos.fetchNextPage, videos]);
 
   const allVideos = videos.data?.pages.flatMap((p) => p.items) ?? [];
+  const { hiddenIds, showHidden } = useHiddenVideos();
+  const visibleVideos = showHidden ? allVideos : allVideos.filter((v) => !hiddenIds.has(v.videoId));
 
   const ch = info.data?.items?.[0];
 
@@ -121,7 +124,7 @@ export default function ChannelPage() {
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
-              {allVideos.map((v) => (
+              {visibleVideos.map((v) => (
                 <VideoCard key={v.videoId} video={v} onPlay={setActive} />
               ))}
             </div>

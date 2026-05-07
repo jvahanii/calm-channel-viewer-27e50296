@@ -11,6 +11,7 @@ import ChannelPage from "./pages/ChannelPage.tsx";
 import AccountPage from "./pages/AccountPage.tsx";
 import { AuthProvider } from "./contexts/AuthContext";
 import { UpgradeDialogProvider } from "./contexts/UpgradeDialog";
+import { HiddenVideosProvider } from "./contexts/HiddenVideos";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <UpgradeDialogProvider>
+            <HiddenVideosProvider>
             <Routes>
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
@@ -31,6 +33,7 @@ const App = () => (
             <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
             </Routes>
+            </HiddenVideosProvider>
           </UpgradeDialogProvider>
         </AuthProvider>
       </BrowserRouter>
