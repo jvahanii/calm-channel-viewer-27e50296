@@ -26,18 +26,19 @@ export function CampaignBanner() {
   });
 
   if (visible.length === 0) return null;
-  const c = visible[0];
 
-  const dismiss = () => {
-    const next = { ...dismissed, [c.id]: true };
+  const dismissOne = (id: string) => {
+    const next = { ...dismissed, [id]: true };
     setDismissed(next);
     sessionStorage.setItem("dismissed_campaigns", JSON.stringify(next));
   };
 
   return (
-    <div className="relative mb-8 overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent p-6 sm:p-8">
+    <div className="mb-8 space-y-4">
+      {visible.map((c) => (
+    <div key={c.id} className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent p-6 sm:p-8">
       <button
-        onClick={dismiss}
+        onClick={() => dismissOne(c.id)}
         className="absolute top-3 right-3 rounded-full p-1.5 text-muted-foreground hover:bg-background/50 hover:text-foreground transition-colors"
         aria-label="Dismiss"
       >
@@ -79,9 +80,16 @@ export function CampaignBanner() {
             <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
               Voimassa {new Date(c.starts_at).toLocaleDateString('fi-FI')} – {new Date(c.ends_at).toLocaleDateString('fi-FI')}
             </span>
+            {c.subscription_days && (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                Tilaus {c.subscription_days} päivää
+              </span>
+            )}
           </div>
         </div>
       </div>
+    </div>
+      ))}
     </div>
   );
 }
