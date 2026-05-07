@@ -3,14 +3,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useUserTier } from "@/hooks/useUserTier";
-import { LogOut, EyeOff } from "lucide-react";
+import { LogOut, EyeOff, Sparkles } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useHiddenVideos } from "@/contexts/HiddenVideos";
 
 export function Header() {
   const { user, signOut } = useAuth();
-  const { tier, isPlus } = useUserTier();
+  const { tier, isPlus, isSuperuser } = useUserTier();
   const { showHidden, setShowHidden, list } = useHiddenVideos();
   const navigate = useNavigate();
 
@@ -35,6 +35,13 @@ export function Header() {
             <NavLink to="/" end className={linkClass}>Home</NavLink>
             <NavLink to="/subscriptions" className={linkClass}>Channels</NavLink>
             <NavLink to="/account" className={linkClass}>Account</NavLink>
+            {isSuperuser && (
+              <NavLink to="/admin" className={linkClass}>
+                <span className="inline-flex items-center gap-1">
+                  <Sparkles className="h-3.5 w-3.5" />Admin
+                </span>
+              </NavLink>
+            )}
             <div className="flex items-center gap-2" title="Show hidden videos">
               <EyeOff className="h-4 w-4 text-muted-foreground" />
               <Switch

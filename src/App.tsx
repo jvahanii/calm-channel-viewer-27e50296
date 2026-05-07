@@ -9,6 +9,7 @@ import AuthPage from "./pages/Auth.tsx";
 import SubscriptionsPage from "./pages/SubscriptionsPage.tsx";
 import ChannelPage from "./pages/ChannelPage.tsx";
 import AccountPage from "./pages/AccountPage.tsx";
+import AdminPage from "./pages/AdminPage.tsx";
 import { AuthProvider } from "./contexts/AuthContext";
 import { UpgradeDialogProvider } from "./contexts/UpgradeDialog";
 import { HiddenVideosProvider } from "./contexts/HiddenVideos";
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/subscriptions" element={<ProtectedRoute><SubscriptionsPage /></ProtectedRoute>} />
             <Route path="/channel/:channelId" element={<ProtectedRoute><ChannelPage /></ProtectedRoute>} />
             <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
             </Routes>
             </HiddenVideosProvider>

@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      campaigns: {
+        Row: {
+          audience: string
+          channel_id: string
+          channel_thumbnail: string | null
+          channel_title: string
+          created_at: string
+          created_by: string
+          description: string | null
+          ends_at: string
+          id: string
+          is_active: boolean
+          starts_at: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          audience?: string
+          channel_id: string
+          channel_thumbnail?: string | null
+          channel_title: string
+          created_at?: string
+          created_by: string
+          description?: string | null
+          ends_at: string
+          id?: string
+          is_active?: boolean
+          starts_at?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          audience?: string
+          channel_id?: string
+          channel_thumbnail?: string | null
+          channel_title?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          ends_at?: string
+          id?: string
+          is_active?: boolean
+          starts_at?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       hidden_videos: {
         Row: {
           channel_id: string
@@ -138,6 +186,11 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_campaign_channel: {
+        Args: { _channel_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_superuser: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "free" | "plus" | "superuser"

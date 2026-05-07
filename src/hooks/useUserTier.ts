@@ -9,18 +9,23 @@ export function useUserTier() {
   const query = useQuery({
     queryKey: ["user_tier", user?.id],
     enabled: !!user,
-    queryFn: async (): Promise<UserTier> => {
+    queryFn: async () => {
       const { data, error } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", user!.id);
       if (error) throw error;
-      return data?.some((r) => r.role === "plus") ? "plus" : "free";
+      const roles = (data ?? []).map((r) => r.role);
+      return {
+        tier: (roles.includes("plus") ? "plus" : "free") as UserTier,
+        isSuperuser: roles.includes("superuser"),
+      };
     },
   });
   return {
-    tier: query.data ?? "free",
-    isPlus: query.data === "plus",
+    tier: query.data?.tier ?? "free",
+    isPlus: query.data?.tier === "plus",
+    isSuperuser: query.data?.isSuperuser ?? false,
     isLoading: query.isLoading,
   };
 }
