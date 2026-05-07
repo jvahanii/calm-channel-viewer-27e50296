@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { useSubscriptions } from "@/hooks/useSubscriptions";
 import { useUpgradeDialog } from "@/contexts/UpgradeDialog";
+import { useActiveCampaigns } from "@/hooks/useCampaigns";
 import { youtube, type YTSearchItem } from "@/lib/youtube";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,7 @@ import { X, Search as SearchIcon, Plus, Check } from "lucide-react";
 export default function SubscriptionsPage() {
   const { list, subscribe, unsubscribe, isSubscribed } = useSubscriptions();
   const { showUpgrade } = useUpgradeDialog();
+  const { data: campaigns = [] } = useActiveCampaigns();
   const [discoverQuery, setDiscoverQuery] = useState("");
 
   useEffect(() => {
@@ -145,6 +147,9 @@ export default function SubscriptionsPage() {
         ) : (
           <ul className="divide-y divide-border border border-border rounded-2xl overflow-hidden bg-card">
             {(list.data ?? []).map((s) => (
+              (() => {
+                const campaign = campaigns.find((c) => c.channel_id === s.channel_id);
+                return (
               <li key={s.id}>
                 <Link
                   to={`/channel/${s.channel_id}`}
@@ -157,6 +162,13 @@ export default function SubscriptionsPage() {
                   )}
                   <div className="flex-1 min-w-0">
                     <h3 className="font-display text-lg truncate">{s.channel_title}</h3>
+                    {campaign && (
+                      <p className="text-xs text-primary mt-1">
+                        Kampanjakanava · voimassa{" "}
+                        {new Date(campaign.starts_at).toLocaleDateString("fi-FI")} –{" "}
+                        {new Date(campaign.ends_at).toLocaleDateString("fi-FI")}
+                      </p>
+                    )}
                   </div>
                   <Button
                     variant="ghost"
@@ -175,6 +187,8 @@ export default function SubscriptionsPage() {
                   </Button>
                 </Link>
               </li>
+                );
+              })()
             ))}
           </ul>
         )}
