@@ -35,7 +35,9 @@ export default function SearchPage() {
 
   const channels = (search.data?.items ?? []).filter((i) => i.id.kind === "youtube#channel");
   const allVideos = (search.data?.items ?? []).filter((i) => i.id.kind === "youtube#video");
-  const videos = showHidden ? allVideos : allVideos.filter((v) => !isHidden(v.id.videoId!));
+  const videos = showHidden
+    ? allVideos.filter((v) => isHidden(v.id.videoId!))
+    : allVideos.filter((v) => !isHidden(v.id.videoId!));
 
   const thumb = (item: YTSearchItem) =>
     item.snippet.thumbnails.high?.url ??
