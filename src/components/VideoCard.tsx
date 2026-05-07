@@ -25,7 +25,7 @@ export function VideoCard({ video, onPlay }: Props) {
             src={video.thumbnail}
             alt={video.title}
             loading="lazy"
-            className={`h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04] ${hidden ? "opacity-50" : ""}`}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
           />
         ) : null}
         <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/20 transition-colors flex items-center justify-center">
