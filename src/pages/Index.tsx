@@ -9,6 +9,7 @@ import { useFeed } from "@/hooks/useFeed";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { useHiddenVideos } from "@/contexts/HiddenVideos";
+import { CampaignBanner } from "@/components/CampaignBanner";
 
 export default function Index() {
   const { list } = useSubscriptions();
@@ -52,6 +53,8 @@ export default function Index() {
             The latest from the channels you actually care about.
           </h1>
         </div>
+
+        <CampaignBanner />
 
         {list.isLoading ? (
           <p className="text-muted-foreground">Loading subscriptions…</p>
