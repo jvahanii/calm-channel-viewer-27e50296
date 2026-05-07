@@ -27,6 +27,7 @@ export type Database = {
           id: string
           is_active: boolean
           starts_at: string
+          subscription_days: number | null
           title: string
           updated_at: string
         }
@@ -42,6 +43,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           starts_at?: string
+          subscription_days?: number | null
           title: string
           updated_at?: string
         }
@@ -57,6 +59,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           starts_at?: string
+          subscription_days?: number | null
           title?: string
           updated_at?: string
         }
@@ -124,26 +127,32 @@ export type Database = {
       }
       subscriptions: {
         Row: {
+          campaign_id: string | null
           channel_id: string
           channel_thumbnail: string | null
           channel_title: string
           created_at: string
+          expires_at: string | null
           id: string
           user_id: string
         }
         Insert: {
+          campaign_id?: string | null
           channel_id: string
           channel_thumbnail?: string | null
           channel_title: string
           created_at?: string
+          expires_at?: string | null
           id?: string
           user_id: string
         }
         Update: {
+          campaign_id?: string | null
           channel_id?: string
           channel_thumbnail?: string | null
           channel_title?: string
           created_at?: string
+          expires_at?: string | null
           id?: string
           user_id?: string
         }
@@ -175,6 +184,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      delete_expired_campaign_subscriptions: { Args: never; Returns: number }
       get_user_tier: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]

@@ -162,7 +162,12 @@ export default function SubscriptionsPage() {
                   )}
                   <div className="flex-1 min-w-0">
                     <h3 className="font-display text-lg truncate">{s.channel_title}</h3>
-                    {campaign && (
+                    {s.expires_at ? (
+                      <p className="text-xs text-primary mt-1">
+                        Kampanjakanava · voimassa{" "}
+                        {new Date(s.expires_at).toLocaleDateString("fi-FI")} asti
+                      </p>
+                    ) : campaign && (
                       <p className="text-xs text-primary mt-1">
                         Kampanjakanava · voimassa{" "}
                         {new Date(campaign.starts_at).toLocaleDateString("fi-FI")} –{" "}
