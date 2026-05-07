@@ -76,8 +76,8 @@ export function CampaignBanner() {
             <Link to={`/channel/${c.channel_id}`} className="text-sm text-muted-foreground hover:text-foreground underline-offset-4 hover:underline">
               Preview channel
             </Link>
-            <span className="text-xs text-muted-foreground">
-              Ends {new Date(c.ends_at).toLocaleDateString()}
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+              Voimassa {new Date(c.starts_at).toLocaleDateString('fi-FI')} – {new Date(c.ends_at).toLocaleDateString('fi-FI')}
             </span>
           </div>
         </div>
