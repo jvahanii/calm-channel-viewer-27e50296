@@ -28,6 +28,9 @@ export default function Index() {
     ? feed.items.filter((v) => hiddenIds.has(v.videoId))
     : feed.items.filter((v) => !hiddenIds.has(v.videoId));
 
+  const allHiddenLoaded =
+    showHidden && hiddenIds.size > 0 && visibleItems.length >= hiddenIds.size;
+
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     const el = sentinelRef.current;
@@ -39,7 +42,8 @@ export default function Index() {
           feed.hasMore &&
           !feed.isLoading &&
           !feed.isInitialLoading &&
-          !(showHidden && hiddenIds.size === 0)
+          !(showHidden && hiddenIds.size === 0) &&
+          !allHiddenLoaded
         ) {
           feed.loadMore();
         }
@@ -48,7 +52,7 @@ export default function Index() {
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, [feed.hasMore, feed.isLoading, feed.isInitialLoading, feed.loadMore, showHidden, hiddenIds.size]);
+  }, [feed.hasMore, feed.isLoading, feed.isInitialLoading, feed.loadMore, showHidden, hiddenIds.size, allHiddenLoaded]);
 
   return (
     <div className="min-h-screen bg-background">
