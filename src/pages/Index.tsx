@@ -23,7 +23,7 @@ export default function Index() {
   const feed = useFeed(channelIds);
   const { hiddenIds, showHidden } = useHiddenVideos();
   const visibleItems = showHidden
-    ? feed.items
+    ? feed.items.filter((v) => hiddenIds.has(v.videoId))
     : feed.items.filter((v) => !hiddenIds.has(v.videoId));
 
   const sentinelRef = useRef<HTMLDivElement | null>(null);
