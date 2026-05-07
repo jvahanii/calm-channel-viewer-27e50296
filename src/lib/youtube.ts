@@ -7,6 +7,7 @@ export type YTVideo = {
   channelTitle: string;
   thumbnail: string;
   publishedAt: string;
+  duration?: string;
 };
 
 export type YTSearchItem = {

@@ -39,7 +39,37 @@ type YTVideo = {
   channelTitle: string;
   thumbnail: string;
   publishedAt: string;
+  duration?: string;
 };
+
+function parseDuration(iso: string): string {
+  const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!match) return iso;
+  const h = parseInt(match[1] ?? "0", 10);
+  const m = parseInt(match[2] ?? "0", 10);
+  const s = parseInt(match[3] ?? "0", 10);
+  if (h > 0) return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
+async function fetchDurations(videoIds: string[], key: string): Promise<Map<string, string>> {
+  const map = new Map<string, string>();
+  if (videoIds.length === 0) return map;
+  const BATCH = 50;
+  for (let i = 0; i < videoIds.length; i += BATCH) {
+    const batch = videoIds.slice(i, i + BATCH);
+    const res = await ytFetch(
+      "videos",
+      { part: "contentDetails", id: batch.join(",") },
+      key,
+    );
+    for (const it of res.items ?? []) {
+      const dur = it.contentDetails?.duration;
+      if (dur) map.set(it.id, parseDuration(dur));
+    }
+  }
+  return map;
+}
 
 async function ytFetch(path: string, params: Record<string, string>, key: string) {
   const url = new URL(`${YT}/${path}`);
@@ -140,6 +170,13 @@ Deno.serve(async (req) => {
           publishedAt: it.contentDetails?.videoPublishedAt ?? sn.publishedAt,
         };
       });
+      const durations = await fetchDurations(
+        items.map((v) => v.videoId).filter(Boolean),
+        key,
+      );
+      for (const v of items) {
+        v.duration = durations.get(v.videoId);
+      }
       return json({ items, nextPageToken: res.nextPageToken ?? null });
     }
 
@@ -187,6 +224,14 @@ Deno.serve(async (req) => {
         });
       }
     });
+
+    const durations = await fetchDurations(
+      items.map((v) => v.videoId).filter(Boolean),
+      key,
+    );
+    for (const v of items) {
+      v.duration = durations.get(v.videoId);
+    }
 
     items.sort(
       (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),

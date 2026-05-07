@@ -28,6 +28,11 @@ export function VideoCard({ video, onPlay }: Props) {
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
           />
         ) : null}
+        {video.duration && (
+          <span className="absolute bottom-2 right-2 inline-flex items-center rounded-md bg-background/90 px-1.5 py-0.5 text-xs font-medium text-foreground shadow-soft">
+            {video.duration}
+          </span>
+        )}
         <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/20 transition-colors flex items-center justify-center">
           <div className="opacity-0 group-hover:opacity-100 transition-opacity rounded-full bg-background/95 p-3 shadow-soft">
             <Play className="h-5 w-5 text-primary fill-primary" />
