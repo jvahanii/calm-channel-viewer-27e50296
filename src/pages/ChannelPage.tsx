@@ -54,7 +54,9 @@ export default function ChannelPage() {
 
   const allVideos = videos.data?.pages.flatMap((p) => p.items) ?? [];
   const { hiddenIds, showHidden } = useHiddenVideos();
-  const visibleVideos = showHidden ? allVideos : allVideos.filter((v) => !hiddenIds.has(v.videoId));
+  const visibleVideos = showHidden
+    ? allVideos.filter((v) => hiddenIds.has(v.videoId))
+    : allVideos.filter((v) => !hiddenIds.has(v.videoId));
 
   const ch = info.data?.items?.[0];
 
