@@ -8,14 +8,16 @@ import { youtube, type YTSearchItem, timeAgo } from "@/lib/youtube";
 import { useSubscriptions } from "@/hooks/useSubscriptions";
 import { useUpgradeDialog } from "@/contexts/UpgradeDialog";
 import { toast } from "sonner";
-import { Play, Plus, Check, Search as SearchIcon } from "lucide-react";
+import { Play, Plus, Check, Search as SearchIcon, EyeOff, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useHiddenVideos } from "@/contexts/HiddenVideos";
 
 export default function SearchPage() {
   const [q, setQ] = useState("");
   const [active, setActive] = useState<{ videoId: string; title: string } | null>(null);
   const { subscribe, unsubscribe, isSubscribed } = useSubscriptions();
   const { showUpgrade } = useUpgradeDialog();
+  const { isHidden, hide, unhide, showHidden } = useHiddenVideos();
 
   useEffect(() => {
     document.title = "Search · Tuubmix";
@@ -32,7 +34,8 @@ export default function SearchPage() {
   };
 
   const channels = (search.data?.items ?? []).filter((i) => i.id.kind === "youtube#channel");
-  const videos = (search.data?.items ?? []).filter((i) => i.id.kind === "youtube#video");
+  const allVideos = (search.data?.items ?? []).filter((i) => i.id.kind === "youtube#video");
+  const videos = showHidden ? allVideos : allVideos.filter((v) => !isHidden(v.id.videoId!));
 
   const thumb = (item: YTSearchItem) =>
     item.snippet.thumbnails.high?.url ??
@@ -125,6 +128,7 @@ export default function SearchPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
               {videos.map((v) => {
                 const vid = v.id.videoId!;
+                const hidden = isHidden(vid);
                 return (
                   <div key={vid} className="group flex flex-col gap-3">
                     <button
@@ -132,12 +136,32 @@ export default function SearchPage() {
                       onClick={() => setActive({ videoId: vid, title: v.snippet.title })}
                       className="relative aspect-video overflow-hidden rounded-xl bg-muted shadow-card focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                      <img src={thumb(v)} alt={v.snippet.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
+                      <img src={thumb(v)} alt={v.snippet.title} loading="lazy" className={`h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04] ${hidden ? "opacity-50" : ""}`} />
                       <div className="absolute inset-0 flex items-center justify-center bg-foreground/0 group-hover:bg-foreground/20 transition-colors">
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity rounded-full bg-background/95 p-3 shadow-soft">
                           <Play className="h-5 w-5 text-primary fill-primary" />
                         </div>
                       </div>
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (hidden) unhide(vid);
+                          else hide({
+                            videoId: vid,
+                            title: v.snippet.title,
+                            thumbnail: thumb(v),
+                            channelId: v.snippet.channelId,
+                            channelTitle: v.snippet.channelTitle,
+                            publishedAt: v.snippet.publishedAt,
+                          });
+                        }}
+                        aria-label={hidden ? "Unhide video" : "Hide video"}
+                        className="absolute top-2 right-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/90 text-foreground shadow-soft opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background cursor-pointer"
+                      >
+                        {hidden ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                      </span>
                     </button>
                     <div className="px-1">
                       <h3 className="font-display text-base leading-snug line-clamp-2">{v.snippet.title}</h3>
