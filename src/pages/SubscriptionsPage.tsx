@@ -8,6 +8,7 @@ import { useActiveCampaigns } from "@/hooks/useCampaigns";
 import { youtube, type YTSearchItem } from "@/lib/youtube";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CampaignBanner } from "@/components/CampaignBanner";
 import { toast } from "sonner";
 import { X, Search as SearchIcon, Plus, Check } from "lucide-react";
 
@@ -67,6 +68,8 @@ export default function SubscriptionsPage() {
       <Header />
       <main className="container py-10 max-w-3xl">
         <h1 className="font-display text-2xl font-semibold mb-6">Your channels</h1>
+
+        <CampaignBanner />
 
         <section className="mb-10">
           <h2 className="text-sm font-medium text-muted-foreground mb-3">Discover</h2>
