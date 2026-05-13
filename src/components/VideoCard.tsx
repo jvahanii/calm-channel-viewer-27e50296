@@ -1,66 +1,42 @@
 import { motion } from "framer-motion";
 import { Play, EyeOff, Eye } from "lucide-react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { timeAgo, type YTVideo } from "@/lib/youtube";
 import { useHiddenVideos, videoToHidePayload } from "@/contexts/HiddenVideos";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type Props = {
   video: YTVideo;
-  onPlay: (v: YTVideo) => void;
+  onPlay?: (v: YTVideo) => void;
 };
 
-const LONG_PRESS_MS = 500;
-
-export function VideoCard({ video, onPlay }: Props) {
+export function VideoCard({ video }: Props) {
   const { isHidden, hide, unhide } = useHiddenVideos();
   const hidden = isHidden(video.videoId);
+  const isMobile = useIsMobile();
   const [revealed, setRevealed] = useState(false);
-  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const longPressedRef = useRef(false);
 
-  const clearLongPress = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
+  const openOnYouTube = () => {
+    window.open(
+      `https://www.youtube.com/watch?v=${video.videoId}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
   };
 
-  const handlePointerDown = (e: React.PointerEvent) => {
-    // Ignore right-click
-    if (e.button !== 0 && e.pointerType === "mouse") return;
-    longPressedRef.current = false;
-    clearLongPress();
-    longPressTimer.current = setTimeout(() => {
-      longPressedRef.current = true;
-      window.open(
-        `https://www.youtube.com/watch?v=${video.videoId}`,
-        "_blank",
-        "noopener,noreferrer",
-      );
-    }, LONG_PRESS_MS);
-  };
-
-  const handlePointerUp = () => {
-    clearLongPress();
-  };
-
-  const handleClick = (e: React.MouseEvent) => {
-    if (longPressedRef.current) {
-      e.preventDefault();
-      e.stopPropagation();
-      longPressedRef.current = false;
+  const handleClick = () => {
+    if (isMobile && !revealed) {
+      setRevealed(true);
       return;
     }
-    setRevealed((r) => !r);
+    openOnYouTube();
   };
+
+  // On mobile show controls once revealed (tap once); on desktop show on hover.
+  const controlsVisible = isMobile ? revealed : false;
 
   return (
     <motion.div
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
-      onPointerLeave={handlePointerUp}
-      onPointerCancel={handlePointerUp}
-      onContextMenu={(e) => e.preventDefault()}
       onClick={handleClick}
       whileHover={{ y: -3 }}
       transition={{ duration: 0.2 }}
@@ -83,25 +59,21 @@ export function VideoCard({ video, onPlay }: Props) {
         )}
         <div
           className={`absolute inset-0 transition-colors flex items-center justify-center ${
-            revealed ? "bg-foreground/20" : "bg-foreground/0 group-hover:bg-foreground/20"
+            controlsVisible ? "bg-foreground/20" : "bg-foreground/0 group-hover:bg-foreground/20"
           }`}
         >
           <button
             type="button"
-            aria-label="Play video"
+            aria-label="Open on YouTube"
             onClick={(e) => {
               e.stopPropagation();
-              if (longPressedRef.current) {
-                longPressedRef.current = false;
-                return;
-              }
-              onPlay(video);
+              openOnYouTube();
             }}
-            className={`transition-opacity rounded-full bg-background/95 p-3 shadow-soft hover:bg-background ${
-              revealed ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+            className={`transition-opacity rounded-full bg-background/95 p-4 sm:p-3 shadow-soft hover:bg-background ${
+              controlsVisible ? "opacity-100" : "opacity-0 group-hover:opacity-100"
             }`}
           >
-            <Play className="h-5 w-5 text-primary fill-primary" />
+            <Play className="h-6 w-6 sm:h-5 sm:w-5 text-primary fill-primary" />
           </button>
         </div>
         <span
@@ -122,11 +94,11 @@ export function VideoCard({ video, onPlay }: Props) {
           }}
           aria-label={hidden ? "Unhide video" : "Hide video"}
           title={hidden ? "Unhide video" : "Hide video"}
-          className={`absolute top-2 right-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/90 text-foreground shadow-soft transition-opacity hover:bg-background cursor-pointer ${
-            revealed ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+          className={`absolute top-2 right-2 inline-flex h-10 w-10 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-background/90 text-foreground shadow-soft transition-opacity hover:bg-background cursor-pointer ${
+            controlsVisible ? "opacity-100" : "opacity-0 group-hover:opacity-100"
           }`}
         >
-          {hidden ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+          {hidden ? <Eye className="h-5 w-5 sm:h-4 sm:w-4" /> : <EyeOff className="h-5 w-5 sm:h-4 sm:w-4" />}
         </span>
       </div>
       <div className="px-1">
