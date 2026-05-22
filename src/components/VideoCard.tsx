@@ -86,7 +86,7 @@ export function VideoCard({ video }: Props) {
           }}
           aria-label={hidden ? "Unhide video" : "Hide video"}
           title={hidden ? "Unhide video" : "Hide video"}
-          className={`absolute top-2 right-2 inline-flex h-10 w-10 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-background/90 text-foreground shadow-soft transition-opacity hover:bg-background cursor-pointer ${
+          className={`absolute top-2 left-2 inline-flex h-10 w-10 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-background/90 text-foreground shadow-soft transition-opacity hover:bg-background cursor-pointer ${
             controlsVisible ? "opacity-100" : "opacity-0 group-hover:opacity-100"
           }`}
         >
