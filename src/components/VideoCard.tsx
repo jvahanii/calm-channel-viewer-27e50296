@@ -3,8 +3,6 @@ import { Play, EyeOff, Eye } from "lucide-react";
 import { useState } from "react";
 import { timeAgo, type YTVideo } from "@/lib/youtube";
 import { useHiddenVideos, videoToHidePayload } from "@/contexts/HiddenVideos";
-import { useIsMobile } from "@/hooks/use-mobile";
-
 type Props = {
   video: YTVideo;
   onPlay?: (v: YTVideo) => void;
@@ -13,7 +11,6 @@ type Props = {
 export function VideoCard({ video }: Props) {
   const { isHidden, hide, unhide } = useHiddenVideos();
   const hidden = isHidden(video.videoId);
-  const isMobile = useIsMobile();
   const [revealed, setRevealed] = useState(false);
 
   const openOnYouTube = () => {
@@ -25,15 +22,10 @@ export function VideoCard({ video }: Props) {
   };
 
   const handleClick = () => {
-    if (isMobile && !revealed) {
-      setRevealed(true);
-      return;
-    }
-    openOnYouTube();
+    setRevealed((r) => !r);
   };
 
-  // On mobile show controls once revealed (tap once); on desktop show on hover.
-  const controlsVisible = isMobile ? revealed : false;
+  const controlsVisible = revealed;
 
   return (
     <motion.div
