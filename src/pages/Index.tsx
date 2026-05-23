@@ -83,6 +83,10 @@ export default function Index() {
           <p className="text-destructive">Could not load videos. Make sure YOUTUBE_API_KEY is set.</p>
         ) : showHidden && hiddenIds.size === 0 ? (
           <p className="text-muted-foreground">No hidden videos.</p>
+        ) : showHidden && visibleItems.length === 0 && !feed.isLoading && !feed.isInitialLoading ? (
+          <p className="text-muted-foreground">
+            No hidden videos in the current feed window. Load more or turn off "Show hidden".
+          </p>
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
