@@ -3,16 +3,26 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useUserTier } from "@/hooks/useUserTier";
-import { LogOut, EyeOff, Sparkles, BookOpen } from "lucide-react";
+import { LogOut, EyeOff, Sparkles, BookOpen, Menu } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useHiddenVideos } from "@/contexts/HiddenVideos";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetClose,
+} from "@/components/ui/sheet";
+import { useState } from "react";
 
 export function Header() {
   const { user, signOut } = useAuth();
   const { tier, isPlus, isSuperuser } = useUserTier();
   const { showHidden, setShowHidden, list } = useHiddenVideos();
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
@@ -24,6 +34,16 @@ export function Header() {
       isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
     }`;
 
+  const mobileLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `text-base py-2 transition-colors ${
+      isActive ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
+    }`;
+
+  const closeAnd = (fn?: () => void) => () => {
+    setOpen(false);
+    fn?.();
+  };
+
   return (
     <header className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-40">
       <div className="container flex h-16 items-center justify-between">
@@ -31,7 +51,93 @@ export function Header() {
           Tuubmix<span className="text-primary">.</span>
         </Link>
         {user && (
-          <nav className="flex items-center gap-7">
+          <>
+          {/* Mobile: quick hidden toggle + menu */}
+          <div className="flex md:hidden items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowHidden(!showHidden)}
+              aria-label={showHidden ? "Stop showing hidden videos" : "Show hidden videos"}
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 h-9 text-xs transition-colors ${
+                showHidden
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <EyeOff className="h-4 w-4" />
+              {list.length > 0 && <span>{list.length}</span>}
+            </button>
+            <Sheet open={open} onOpenChange={setOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" aria-label="Open menu">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-72">
+                <SheetHeader>
+                  <SheetTitle className="flex items-center gap-2">
+                    Menu
+                    <Badge
+                      variant={isPlus ? "default" : "secondary"}
+                      className="uppercase tracking-wider text-[10px]"
+                    >
+                      {tier}
+                    </Badge>
+                  </SheetTitle>
+                </SheetHeader>
+                <nav className="flex flex-col mt-6">
+                  <SheetClose asChild>
+                    <NavLink to="/" end className={mobileLinkClass}>Home</NavLink>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <NavLink to="/subscriptions" className={mobileLinkClass}>Channels</NavLink>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <NavLink to="/account" className={mobileLinkClass}>Account</NavLink>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <NavLink to="/guide" className={mobileLinkClass}>
+                      <span className="inline-flex items-center gap-1.5">
+                        <BookOpen className="h-4 w-4" />Guide
+                      </span>
+                    </NavLink>
+                  </SheetClose>
+                  {isSuperuser && (
+                    <SheetClose asChild>
+                      <NavLink to="/admin" className={mobileLinkClass}>
+                        <span className="inline-flex items-center gap-1.5">
+                          <Sparkles className="h-4 w-4" />Admin
+                        </span>
+                      </NavLink>
+                    </SheetClose>
+                  )}
+                </nav>
+                <div className="mt-6 pt-6 border-t border-border flex items-center justify-between">
+                  <Label htmlFor="show-hidden-mobile" className="text-sm cursor-pointer inline-flex items-center gap-2">
+                    <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    Show hidden{list.length > 0 ? ` (${list.length})` : ""}
+                  </Label>
+                  <Switch
+                    id="show-hidden-mobile"
+                    checked={showHidden}
+                    onCheckedChange={setShowHidden}
+                    aria-label="Show hidden videos"
+                  />
+                </div>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start mt-4 px-0"
+                  onClick={closeAnd(handleSignOut)}
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign out
+                </Button>
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center gap-7">
             <NavLink to="/" end className={linkClass}>Home</NavLink>
             <NavLink to="/subscriptions" className={linkClass}>Channels</NavLink>
             <NavLink to="/account" className={linkClass}>Account</NavLink>
@@ -70,6 +176,7 @@ export function Header() {
               Sign out
             </Button>
           </nav>
+          </>
         )}
       </div>
     </header>
