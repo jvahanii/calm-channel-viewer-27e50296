@@ -52,21 +52,8 @@ export function Header() {
         </Link>
         {user && (
           <>
-          {/* Mobile: quick hidden toggle + menu */}
+          {/* Mobile: menu only (hidden toggle lives inside the sheet) */}
           <div className="flex md:hidden items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setShowHidden(!showHidden)}
-              aria-label={showHidden ? "Stop showing hidden videos" : "Show hidden videos"}
-              className={`inline-flex items-center gap-1.5 rounded-full px-3 h-9 text-xs transition-colors ${
-                showHidden
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <EyeOff className="h-4 w-4" />
-              {list.length > 0 && <span>{list.length}</span>}
-            </button>
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" aria-label="Open menu">
