@@ -76,3 +76,19 @@ export function timeAgo(iso: string): string {
   const y = Math.floor(d / 365);
   return `${y}y ago`;
 }
+
+export function parseDuration(d?: string): number {
+  if (!d) return 0;
+  const parts = d.split(":").map(Number);
+  if (parts.length === 2) {
+    return parts[0] * 60 + parts[1];
+  }
+  if (parts.length === 3) {
+    return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  }
+  return 0;
+}
+
+export function isShortVideo(d?: string): boolean {
+  return parseDuration(d) <= 300;
+}
