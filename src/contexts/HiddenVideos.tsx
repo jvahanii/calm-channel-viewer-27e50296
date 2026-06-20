@@ -25,6 +25,8 @@ type Ctx = {
   unhide: (videoId: string) => void;
   showHidden: boolean;
   setShowHidden: (v: boolean) => void;
+  hideShorts: boolean;
+  setHideShorts: (v: boolean) => void;
 };
 
 const HiddenVideosContext = createContext<Ctx | null>(null);
