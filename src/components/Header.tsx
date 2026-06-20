@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useUserTier } from "@/hooks/useUserTier";
-import { LogOut, EyeOff, Sparkles, BookOpen, Menu } from "lucide-react";
+import { LogOut, EyeOff, Sparkles, BookOpen, Menu, Timer } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useHiddenVideos } from "@/contexts/HiddenVideos";
@@ -20,7 +20,7 @@ import { useState } from "react";
 export function Header() {
   const { user, signOut } = useAuth();
   const { tier, isPlus, isSuperuser } = useUserTier();
-  const { showHidden, setShowHidden, list } = useHiddenVideos();
+  const { showHidden, setShowHidden, hideShorts, setHideShorts, list } = useHiddenVideos();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
@@ -111,6 +111,18 @@ export function Header() {
                     aria-label="Show hidden videos"
                   />
                 </div>
+                <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
+                  <Label htmlFor="hide-shorts-mobile" className="text-sm cursor-pointer inline-flex items-center gap-2">
+                    <Timer className="h-4 w-4 text-muted-foreground" />
+                    Hide shorts
+                  </Label>
+                  <Switch
+                    id="hide-shorts-mobile"
+                    checked={hideShorts}
+                    onCheckedChange={setHideShorts}
+                    aria-label="Hide videos 5 minutes or shorter"
+                  />
+                </div>
                 <Button
                   variant="ghost"
                   className="w-full justify-start mt-4 px-0"
@@ -150,6 +162,18 @@ export function Header() {
               />
               <Label htmlFor="show-hidden" className="text-xs text-muted-foreground cursor-pointer">
                 Hidden{list.length > 0 ? ` (${list.length})` : ""}
+              </Label>
+            </div>
+            <div className="flex items-center gap-2" title="Hide videos 5 minutes or shorter">
+              <Timer className="h-4 w-4 text-muted-foreground" />
+              <Switch
+                id="hide-shorts"
+                checked={hideShorts}
+                onCheckedChange={setHideShorts}
+                aria-label="Hide videos 5 minutes or shorter"
+              />
+              <Label htmlFor="hide-shorts" className="text-xs text-muted-foreground cursor-pointer">
+                Shorts
               </Label>
             </div>
             <Badge

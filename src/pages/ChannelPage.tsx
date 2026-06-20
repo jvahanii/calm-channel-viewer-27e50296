@@ -4,7 +4,7 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
 import { VideoCard } from "@/components/VideoCard";
 import { VideoPlayer } from "@/components/VideoPlayer";
-import { youtube, type YTVideo } from "@/lib/youtube";
+import { youtube, type YTVideo, isShortVideo } from "@/lib/youtube";
 import { useSubscriptions } from "@/hooks/useSubscriptions";
 import { useUpgradeDialog } from "@/contexts/UpgradeDialog";
 import { Button } from "@/components/ui/button";
@@ -53,10 +53,11 @@ export default function ChannelPage() {
   }, [videos.hasNextPage, videos.isFetchingNextPage, videos.fetchNextPage, videos]);
 
   const allVideos = videos.data?.pages.flatMap((p) => p.items) ?? [];
-  const { hiddenIds, showHidden } = useHiddenVideos();
-  const visibleVideos = showHidden
+  const { hiddenIds, showHidden, hideShorts } = useHiddenVideos();
+  const visibleVideos = (showHidden
     ? allVideos.filter((v) => hiddenIds.has(v.videoId))
-    : allVideos.filter((v) => !hiddenIds.has(v.videoId));
+    : allVideos.filter((v) => !hiddenIds.has(v.videoId))
+  ).filter((v) => !hideShorts || !isShortVideo(v.duration));
 
   const ch = info.data?.items?.[0];
 

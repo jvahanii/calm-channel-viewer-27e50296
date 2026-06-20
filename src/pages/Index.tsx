@@ -4,7 +4,7 @@ import { Header } from "@/components/Header";
 import { VideoCard } from "@/components/VideoCard";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { useSubscriptions } from "@/hooks/useSubscriptions";
-import { type YTVideo } from "@/lib/youtube";
+import { type YTVideo, isShortVideo } from "@/lib/youtube";
 import { useFeed } from "@/hooks/useFeed";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
@@ -22,11 +22,12 @@ export default function Index() {
   const channelIds = (list.data ?? []).map((s) => s.channel_id);
 
   const feed = useFeed(channelIds);
-  const { hiddenIds, showHidden } = useHiddenVideos();
+  const { hiddenIds, showHidden, hideShorts } = useHiddenVideos();
   const showingHiddenOnly = showHidden && hiddenIds.size > 0;
-  const visibleItems = showHidden
+  const visibleItems = (showHidden
     ? feed.items.filter((v) => hiddenIds.has(v.videoId))
-    : feed.items.filter((v) => !hiddenIds.has(v.videoId));
+    : feed.items.filter((v) => !hiddenIds.has(v.videoId))
+  ).filter((v) => !hideShorts || !isShortVideo(v.duration));
 
   const allHiddenLoaded =
     showHidden && hiddenIds.size > 0 && visibleItems.length >= hiddenIds.size;
