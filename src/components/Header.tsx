@@ -164,6 +164,18 @@ export function Header() {
                 Hidden{list.length > 0 ? ` (${list.length})` : ""}
               </Label>
             </div>
+            <div className="flex items-center gap-2" title="Hide videos 5 minutes or shorter">
+              <Timer className="h-4 w-4 text-muted-foreground" />
+              <Switch
+                id="hide-shorts"
+                checked={hideShorts}
+                onCheckedChange={setHideShorts}
+                aria-label="Hide videos 5 minutes or shorter"
+              />
+              <Label htmlFor="hide-shorts" className="text-xs text-muted-foreground cursor-pointer">
+                Shorts
+              </Label>
+            </div>
             <Badge
               variant={isPlus ? "default" : "secondary"}
               className="uppercase tracking-wider text-[10px]"
