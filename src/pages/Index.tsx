@@ -4,7 +4,7 @@ import { Header } from "@/components/Header";
 import { VideoCard } from "@/components/VideoCard";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { useSubscriptions } from "@/hooks/useSubscriptions";
-import { type YTVideo } from "@/lib/youtube";
+import { type YTVideo, isShortVideo } from "@/lib/youtube";
 import { useFeed } from "@/hooks/useFeed";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
