@@ -20,7 +20,7 @@ import { useState } from "react";
 export function Header() {
   const { user, signOut } = useAuth();
   const { tier, isPlus, isSuperuser } = useUserTier();
-  const { showHidden, setShowHidden, list } = useHiddenVideos();
+  const { showHidden, setShowHidden, hideShorts, setHideShorts, list } = useHiddenVideos();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
