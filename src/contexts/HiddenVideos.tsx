@@ -126,6 +126,8 @@ export function HiddenVideosProvider({ children }: { children: ReactNode }) {
     unhide: (videoId) => unhideMut.mutate(videoId),
     showHidden,
     setShowHidden,
+    hideShorts,
+    setHideShorts,
   };
 
   return <HiddenVideosContext.Provider value={value}>{children}</HiddenVideosContext.Provider>;
