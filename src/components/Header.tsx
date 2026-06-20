@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useUserTier } from "@/hooks/useUserTier";
-import { LogOut, EyeOff, Sparkles, BookOpen, Menu } from "lucide-react";
+import { LogOut, EyeOff, Sparkles, BookOpen, Menu, Timer } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useHiddenVideos } from "@/contexts/HiddenVideos";
