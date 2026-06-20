@@ -32,6 +32,7 @@ type Ctx = {
 const HiddenVideosContext = createContext<Ctx | null>(null);
 
 const STORAGE_KEY = "tuubmix:showHidden";
+const SHORTS_KEY = "tuubmix:hideShorts";
 
 export function HiddenVideosProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
@@ -46,6 +47,19 @@ export function HiddenVideosProvider({ children }: { children: ReactNode }) {
     setShowHiddenState(v);
     try {
       window.localStorage.setItem(STORAGE_KEY, v ? "1" : "0");
+    } catch {}
+  };
+
+  const [hideShorts, setHideShortsState] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    const stored = window.localStorage.getItem(SHORTS_KEY);
+    return stored === "1";
+  });
+
+  const setHideShorts = (v: boolean) => {
+    setHideShortsState(v);
+    try {
+      window.localStorage.setItem(SHORTS_KEY, v ? "1" : "0");
     } catch {}
   };
 
