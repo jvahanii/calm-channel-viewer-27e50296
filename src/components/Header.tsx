@@ -111,6 +111,18 @@ export function Header() {
                     aria-label="Show hidden videos"
                   />
                 </div>
+                <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
+                  <Label htmlFor="hide-shorts-mobile" className="text-sm cursor-pointer inline-flex items-center gap-2">
+                    <Timer className="h-4 w-4 text-muted-foreground" />
+                    Hide shorts
+                  </Label>
+                  <Switch
+                    id="hide-shorts-mobile"
+                    checked={hideShorts}
+                    onCheckedChange={setHideShorts}
+                    aria-label="Hide videos 5 minutes or shorter"
+                  />
+                </div>
                 <Button
                   variant="ghost"
                   className="w-full justify-start mt-4 px-0"
