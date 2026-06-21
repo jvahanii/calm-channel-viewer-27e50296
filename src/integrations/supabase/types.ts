@@ -125,6 +125,45 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_videos: {
+        Row: {
+          channel_id: string
+          channel_title: string
+          created_at: string
+          id: string
+          published_at: string | null
+          user_id: string
+          video_duration: string | null
+          video_id: string
+          video_thumbnail: string | null
+          video_title: string
+        }
+        Insert: {
+          channel_id: string
+          channel_title: string
+          created_at?: string
+          id?: string
+          published_at?: string | null
+          user_id: string
+          video_duration?: string | null
+          video_id: string
+          video_thumbnail?: string | null
+          video_title: string
+        }
+        Update: {
+          channel_id?: string
+          channel_title?: string
+          created_at?: string
+          id?: string
+          published_at?: string | null
+          user_id?: string
+          video_duration?: string | null
+          video_id?: string
+          video_thumbnail?: string | null
+          video_title?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           campaign_id: string | null

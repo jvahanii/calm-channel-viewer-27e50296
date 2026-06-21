@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
-import { Play, EyeOff, Eye } from "lucide-react";
+import { Play, EyeOff, Eye, Bookmark, BookmarkCheck } from "lucide-react";
 import { useState } from "react";
 import { timeAgo, type YTVideo } from "@/lib/youtube";
 import { useHiddenVideos, videoToHidePayload } from "@/contexts/HiddenVideos";
+import { useSavedVideos, videoToSavePayload } from "@/contexts/SavedVideos";
 type Props = {
   video: YTVideo;
   onPlay?: (v: YTVideo) => void;
@@ -10,7 +11,9 @@ type Props = {
 
 export function VideoCard({ video }: Props) {
   const { isHidden, hide, unhide } = useHiddenVideos();
+  const { isSaved, save, unsave } = useSavedVideos();
   const hidden = isHidden(video.videoId);
+  const saved = isSaved(video.videoId);
   const [revealed, setRevealed] = useState(false);
 
   const openOnYouTube = () => {
@@ -91,6 +94,34 @@ export function VideoCard({ video }: Props) {
           }`}
         >
           {hidden ? <Eye className="h-5 w-5 sm:h-4 sm:w-4" /> : <EyeOff className="h-5 w-5 sm:h-4 sm:w-4" />}
+        </span>
+        <span
+          role="button"
+          tabIndex={0}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (saved) unsave(video.videoId);
+            else save(videoToSavePayload(video));
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              e.stopPropagation();
+              if (saved) unsave(video.videoId);
+              else save(videoToSavePayload(video));
+            }
+          }}
+          aria-label={saved ? "Remove from saved" : "Save video"}
+          title={saved ? "Remove from saved" : "Save video"}
+          className={`absolute top-2 right-2 inline-flex h-10 w-10 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-background/90 text-foreground shadow-soft transition-opacity hover:bg-background cursor-pointer ${
+            controlsVisible || saved ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+          }`}
+        >
+          {saved ? (
+            <BookmarkCheck className="h-5 w-5 sm:h-4 sm:w-4 text-primary fill-primary" />
+          ) : (
+            <Bookmark className="h-5 w-5 sm:h-4 sm:w-4" />
+          )}
         </span>
       </div>
       <div className="px-1">

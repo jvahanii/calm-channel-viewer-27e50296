@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useUserTier } from "@/hooks/useUserTier";
-import { LogOut, EyeOff, Sparkles, BookOpen, Menu, Timer } from "lucide-react";
+import { LogOut, EyeOff, Sparkles, BookOpen, Menu, Timer, Bookmark } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useHiddenVideos } from "@/contexts/HiddenVideos";
@@ -80,6 +80,13 @@ export function Header() {
                     <NavLink to="/subscriptions" className={mobileLinkClass}>Channels</NavLink>
                   </SheetClose>
                   <SheetClose asChild>
+                    <NavLink to="/saved" className={mobileLinkClass}>
+                      <span className="inline-flex items-center gap-1.5">
+                        <Bookmark className="h-4 w-4" />Saved
+                      </span>
+                    </NavLink>
+                  </SheetClose>
+                  <SheetClose asChild>
                     <NavLink to="/account" className={mobileLinkClass}>Account</NavLink>
                   </SheetClose>
                   <SheetClose asChild>
@@ -139,6 +146,11 @@ export function Header() {
           <nav className="hidden md:flex items-center gap-7">
             <NavLink to="/" end className={linkClass}>Home</NavLink>
             <NavLink to="/subscriptions" className={linkClass}>Channels</NavLink>
+            <NavLink to="/saved" className={linkClass}>
+              <span className="inline-flex items-center gap-1">
+                <Bookmark className="h-3.5 w-3.5" />Saved
+              </span>
+            </NavLink>
             <NavLink to="/account" className={linkClass}>Account</NavLink>
             <NavLink to="/guide" className={linkClass}>
               <span className="inline-flex items-center gap-1">
