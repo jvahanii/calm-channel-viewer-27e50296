@@ -11,9 +11,11 @@ import ChannelPage from "./pages/ChannelPage.tsx";
 import AccountPage from "./pages/AccountPage.tsx";
 import AdminPage from "./pages/AdminPage.tsx";
 import GuidePage from "./pages/GuidePage.tsx";
+import SavedPage from "./pages/SavedPage.tsx";
 import { AuthProvider } from "./contexts/AuthContext";
 import { UpgradeDialogProvider } from "./contexts/UpgradeDialog";
 import { HiddenVideosProvider } from "./contexts/HiddenVideos";
+import { SavedVideosProvider } from "./contexts/SavedVideos";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -27,6 +29,7 @@ const App = () => (
         <AuthProvider>
           <UpgradeDialogProvider>
             <HiddenVideosProvider>
+            <SavedVideosProvider>
             <Routes>
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/guide" element={<GuidePage />} />
@@ -35,8 +38,10 @@ const App = () => (
             <Route path="/channel/:channelId" element={<ProtectedRoute><ChannelPage /></ProtectedRoute>} />
             <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
+            <Route path="/saved" element={<ProtectedRoute><SavedPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
             </Routes>
+            </SavedVideosProvider>
             </HiddenVideosProvider>
           </UpgradeDialogProvider>
         </AuthProvider>
