@@ -6,6 +6,7 @@ import { useUserTier } from "@/hooks/useUserTier";
 import { LogOut, EyeOff, Sparkles, BookOpen, Menu, Timer, Bookmark } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { useHiddenVideos } from "@/contexts/HiddenVideos";
 import {
   Sheet,
