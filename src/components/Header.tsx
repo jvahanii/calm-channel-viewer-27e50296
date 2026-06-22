@@ -198,17 +198,34 @@ export function Header() {
                 Hidden{list.length > 0 ? ` (${list.length})` : ""}
               </Label>
             </div>
-            <div className="flex items-center gap-2" title="Hide videos 5 minutes or shorter">
+            <div className="flex items-center gap-2" title={`Hide videos ${shortsLimit} minutes or shorter`}>
               <Timer className="h-4 w-4 text-muted-foreground" />
               <Switch
                 id="hide-shorts"
                 checked={hideShorts}
                 onCheckedChange={setHideShorts}
-                aria-label="Hide videos 5 minutes or shorter"
+                aria-label={`Hide videos ${shortsLimit} minutes or shorter`}
               />
               <Label htmlFor="hide-shorts" className="text-xs text-muted-foreground cursor-pointer">
                 Shorts
               </Label>
+              {hideShorts && (
+                <div className="flex items-center gap-1 ml-1">
+                  <Input
+                    type="number"
+                    min={1}
+                    max={60}
+                    value={shortsLimit}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value, 10);
+                      if (!isNaN(val)) setShortsLimit(val);
+                    }}
+                    className="w-12 h-6 px-1 text-xs text-center"
+                    aria-label="Short video limit in minutes"
+                  />
+                  <span className="text-xs text-muted-foreground">min</span>
+                </div>
+              )}
             </div>
             <Badge
               variant={isPlus ? "default" : "secondary"}
