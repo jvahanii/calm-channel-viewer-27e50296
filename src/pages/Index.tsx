@@ -22,7 +22,7 @@ export default function Index() {
   const channelIds = (list.data ?? []).map((s) => s.channel_id);
 
   const feed = useFeed(channelIds);
-  const { hiddenIds, showHidden, hideShorts } = useHiddenVideos();
+  const { hiddenIds, showHidden, hideShorts, shortsLimit } = useHiddenVideos();
   const showingHiddenOnly = showHidden && hiddenIds.size > 0;
   const visibleItems = (showHidden
     ? feed.items.filter((v) => hiddenIds.has(v.videoId))
