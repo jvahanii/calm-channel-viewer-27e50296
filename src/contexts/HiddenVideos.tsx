@@ -146,6 +146,8 @@ export function HiddenVideosProvider({ children }: { children: ReactNode }) {
     setShowHidden,
     hideShorts,
     setHideShorts,
+    shortsLimit,
+    setShortsLimit,
   };
 
   return <HiddenVideosContext.Provider value={value}>{children}</HiddenVideosContext.Provider>;
