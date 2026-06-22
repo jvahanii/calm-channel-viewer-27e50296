@@ -35,6 +35,7 @@ const HiddenVideosContext = createContext<Ctx | null>(null);
 
 const STORAGE_KEY = "tuubmix:showHidden";
 const SHORTS_KEY = "tuubmix:hideShorts";
+const SHORTS_LIMIT_KEY = "tuubmix:shortsLimit";
 
 export function HiddenVideosProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
