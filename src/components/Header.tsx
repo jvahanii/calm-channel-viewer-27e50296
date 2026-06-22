@@ -6,6 +6,7 @@ import { useUserTier } from "@/hooks/useUserTier";
 import { LogOut, EyeOff, Sparkles, BookOpen, Menu, Timer, Bookmark } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { useHiddenVideos } from "@/contexts/HiddenVideos";
 import {
   Sheet,
@@ -20,7 +21,7 @@ import { useState } from "react";
 export function Header() {
   const { user, signOut } = useAuth();
   const { tier, isPlus, isSuperuser } = useUserTier();
-  const { showHidden, setShowHidden, hideShorts, setHideShorts, list } = useHiddenVideos();
+  const { showHidden, setShowHidden, hideShorts, setHideShorts, shortsLimit, setShortsLimit, list } = useHiddenVideos();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
@@ -121,15 +122,36 @@ export function Header() {
                 <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
                   <Label htmlFor="hide-shorts-mobile" className="text-sm cursor-pointer inline-flex items-center gap-2">
                     <Timer className="h-4 w-4 text-muted-foreground" />
-                    Hide shorts
+                    Hide short videos
                   </Label>
                   <Switch
                     id="hide-shorts-mobile"
                     checked={hideShorts}
                     onCheckedChange={setHideShorts}
-                    aria-label="Hide videos 5 minutes or shorter"
+                    aria-label={`Hide videos ${shortsLimit} minutes or shorter`}
                   />
                 </div>
+                {hideShorts && (
+                  <div className="mt-3 flex items-center gap-2 px-1">
+                    <Label htmlFor="shorts-limit-mobile" className="text-sm text-muted-foreground">
+                      Hide videos up to
+                    </Label>
+                    <Input
+                      id="shorts-limit-mobile"
+                      type="number"
+                      min={1}
+                      max={60}
+                      value={shortsLimit}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        if (!isNaN(val)) setShortsLimit(val);
+                      }}
+                      className="w-16 h-8 text-sm"
+                      aria-label="Short video limit in minutes"
+                    />
+                    <span className="text-sm text-muted-foreground">minutes</span>
+                  </div>
+                )}
                 <Button
                   variant="ghost"
                   className="w-full justify-start mt-4 px-0"
@@ -176,17 +198,34 @@ export function Header() {
                 Hidden{list.length > 0 ? ` (${list.length})` : ""}
               </Label>
             </div>
-            <div className="flex items-center gap-2" title="Hide videos 5 minutes or shorter">
+            <div className="flex items-center gap-2" title={`Hide videos ${shortsLimit} minutes or shorter`}>
               <Timer className="h-4 w-4 text-muted-foreground" />
               <Switch
                 id="hide-shorts"
                 checked={hideShorts}
                 onCheckedChange={setHideShorts}
-                aria-label="Hide videos 5 minutes or shorter"
+                aria-label={`Hide videos ${shortsLimit} minutes or shorter`}
               />
               <Label htmlFor="hide-shorts" className="text-xs text-muted-foreground cursor-pointer">
                 Shorts
               </Label>
+              {hideShorts && (
+                <div className="flex items-center gap-1 ml-1">
+                  <Input
+                    type="number"
+                    min={1}
+                    max={60}
+                    value={shortsLimit}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value, 10);
+                      if (!isNaN(val)) setShortsLimit(val);
+                    }}
+                    className="w-12 h-6 px-1 text-xs text-center"
+                    aria-label="Short video limit in minutes"
+                  />
+                  <span className="text-xs text-muted-foreground">min</span>
+                </div>
+              )}
             </div>
             <Badge
               variant={isPlus ? "default" : "secondary"}

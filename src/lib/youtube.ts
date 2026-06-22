@@ -89,6 +89,6 @@ export function parseDuration(d?: string): number {
   return 0;
 }
 
-export function isShortVideo(d?: string): boolean {
-  return parseDuration(d) <= 300;
+export function isShortVideo(d: string | undefined, thresholdSeconds = 300): boolean {
+  return parseDuration(d) <= thresholdSeconds;
 }

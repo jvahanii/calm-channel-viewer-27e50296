@@ -53,11 +53,11 @@ export default function ChannelPage() {
   }, [videos.hasNextPage, videos.isFetchingNextPage, videos.fetchNextPage, videos]);
 
   const allVideos = videos.data?.pages.flatMap((p) => p.items) ?? [];
-  const { hiddenIds, showHidden, hideShorts } = useHiddenVideos();
+  const { hiddenIds, showHidden, hideShorts, shortsLimit } = useHiddenVideos();
   const visibleVideos = (showHidden
     ? allVideos.filter((v) => hiddenIds.has(v.videoId))
     : allVideos.filter((v) => !hiddenIds.has(v.videoId))
-  ).filter((v) => !hideShorts || !isShortVideo(v.duration));
+  ).filter((v) => !hideShorts || !isShortVideo(v.duration, shortsLimit * 60));
 
   const ch = info.data?.items?.[0];
 

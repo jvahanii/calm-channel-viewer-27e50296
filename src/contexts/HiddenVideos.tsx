@@ -27,12 +27,15 @@ type Ctx = {
   setShowHidden: (v: boolean) => void;
   hideShorts: boolean;
   setHideShorts: (v: boolean) => void;
+  shortsLimit: number;
+  setShortsLimit: (v: number) => void;
 };
 
 const HiddenVideosContext = createContext<Ctx | null>(null);
 
 const STORAGE_KEY = "tuubmix:showHidden";
 const SHORTS_KEY = "tuubmix:hideShorts";
+const SHORTS_LIMIT_KEY = "tuubmix:shortsLimit";
 
 export function HiddenVideosProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
@@ -60,6 +63,21 @@ export function HiddenVideosProvider({ children }: { children: ReactNode }) {
     setHideShortsState(v);
     try {
       window.localStorage.setItem(SHORTS_KEY, v ? "1" : "0");
+    } catch {}
+  };
+
+  const [shortsLimit, setShortsLimitState] = useState<number>(() => {
+    if (typeof window === "undefined") return 5;
+    const stored = window.localStorage.getItem(SHORTS_LIMIT_KEY);
+    const parsed = stored ? parseInt(stored, 10) : NaN;
+    return Number.isFinite(parsed) && parsed >= 1 && parsed <= 60 ? parsed : 5;
+  });
+
+  const setShortsLimit = (v: number) => {
+    const clamped = Math.min(60, Math.max(1, v));
+    setShortsLimitState(clamped);
+    try {
+      window.localStorage.setItem(SHORTS_LIMIT_KEY, String(clamped));
     } catch {}
   };
 
@@ -128,6 +146,8 @@ export function HiddenVideosProvider({ children }: { children: ReactNode }) {
     setShowHidden,
     hideShorts,
     setHideShorts,
+    shortsLimit,
+    setShortsLimit,
   };
 
   return <HiddenVideosContext.Provider value={value}>{children}</HiddenVideosContext.Provider>;
