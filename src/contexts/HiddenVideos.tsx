@@ -66,6 +66,21 @@ export function HiddenVideosProvider({ children }: { children: ReactNode }) {
     } catch {}
   };
 
+  const [shortsLimit, setShortsLimitState] = useState<number>(() => {
+    if (typeof window === "undefined") return 5;
+    const stored = window.localStorage.getItem(SHORTS_LIMIT_KEY);
+    const parsed = stored ? parseInt(stored, 10) : NaN;
+    return Number.isFinite(parsed) && parsed >= 1 && parsed <= 60 ? parsed : 5;
+  });
+
+  const setShortsLimit = (v: number) => {
+    const clamped = Math.min(60, Math.max(1, v));
+    setShortsLimitState(clamped);
+    try {
+      window.localStorage.setItem(SHORTS_LIMIT_KEY, String(clamped));
+    } catch {}
+  };
+
   const list = useQuery({
     queryKey: ["hidden_videos", user?.id],
     enabled: !!user,
