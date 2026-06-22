@@ -27,7 +27,7 @@ export default function Index() {
   const visibleItems = (showHidden
     ? feed.items.filter((v) => hiddenIds.has(v.videoId))
     : feed.items.filter((v) => !hiddenIds.has(v.videoId))
-  ).filter((v) => !hideShorts || !isShortVideo(v.duration));
+  ).filter((v) => !hideShorts || !isShortVideo(v.duration, shortsLimit * 60));
 
   const allHiddenLoaded =
     showHidden && hiddenIds.size > 0 && visibleItems.length >= hiddenIds.size;
