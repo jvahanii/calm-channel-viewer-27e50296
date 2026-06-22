@@ -122,15 +122,36 @@ export function Header() {
                 <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
                   <Label htmlFor="hide-shorts-mobile" className="text-sm cursor-pointer inline-flex items-center gap-2">
                     <Timer className="h-4 w-4 text-muted-foreground" />
-                    Hide shorts
+                    Hide short videos
                   </Label>
                   <Switch
                     id="hide-shorts-mobile"
                     checked={hideShorts}
                     onCheckedChange={setHideShorts}
-                    aria-label="Hide videos 5 minutes or shorter"
+                    aria-label={`Hide videos ${shortsLimit} minutes or shorter`}
                   />
                 </div>
+                {hideShorts && (
+                  <div className="mt-3 flex items-center gap-2 px-1">
+                    <Label htmlFor="shorts-limit-mobile" className="text-sm text-muted-foreground">
+                      Hide videos up to
+                    </Label>
+                    <Input
+                      id="shorts-limit-mobile"
+                      type="number"
+                      min={1}
+                      max={60}
+                      value={shortsLimit}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        if (!isNaN(val)) setShortsLimit(val);
+                      }}
+                      className="w-16 h-8 text-sm"
+                      aria-label="Short video limit in minutes"
+                    />
+                    <span className="text-sm text-muted-foreground">minutes</span>
+                  </div>
+                )}
                 <Button
                   variant="ghost"
                   className="w-full justify-start mt-4 px-0"
