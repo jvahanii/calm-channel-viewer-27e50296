@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -64,6 +64,9 @@ export function HiddenVideosProvider({ children }: { children: ReactNode }) {
     try {
       window.localStorage.setItem(SHORTS_KEY, v ? "1" : "0");
     } catch {}
+    if (user) {
+      void supabase.from("profiles").update({ hide_shorts: v }).eq("user_id", user.id);
+    }
   };
 
   const [shortsLimit, setShortsLimitState] = useState<number>(() => {
@@ -79,7 +82,38 @@ export function HiddenVideosProvider({ children }: { children: ReactNode }) {
     try {
       window.localStorage.setItem(SHORTS_LIMIT_KEY, String(clamped));
     } catch {}
+    if (user) {
+      void supabase.from("profiles").update({ shorts_limit: clamped }).eq("user_id", user.id);
+    }
   };
+
+  // Load synced preferences from profile when user signs in
+  const loadedForUser = useRef<string | null>(null);
+  useEffect(() => {
+    if (!user) {
+      loadedForUser.current = null;
+      return;
+    }
+    if (loadedForUser.current === user.id) return;
+    loadedForUser.current = user.id;
+    (async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("hide_shorts, shorts_limit")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (!data) return;
+      if (typeof data.hide_shorts === "boolean") {
+        setHideShortsState(data.hide_shorts);
+        try { window.localStorage.setItem(SHORTS_KEY, data.hide_shorts ? "1" : "0"); } catch {}
+      }
+      if (typeof data.shorts_limit === "number") {
+        const clamped = Math.min(60, Math.max(1, data.shorts_limit));
+        setShortsLimitState(clamped);
+        try { window.localStorage.setItem(SHORTS_LIMIT_KEY, String(clamped)); } catch {}
+      }
+    })();
+  }, [user]);
 
   const list = useQuery({
     queryKey: ["hidden_videos", user?.id],
