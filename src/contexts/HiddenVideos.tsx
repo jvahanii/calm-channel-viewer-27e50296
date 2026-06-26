@@ -65,7 +65,12 @@ export function HiddenVideosProvider({ children }: { children: ReactNode }) {
       window.localStorage.setItem(SHORTS_KEY, v ? "1" : "0");
     } catch {}
     if (user) {
-      void supabase.from("profiles").update({ hide_shorts: v }).eq("user_id", user.id);
+      void supabase
+        .from("profiles")
+        .upsert({ user_id: user.id, hide_shorts: v }, { onConflict: "user_id" })
+        .then(({ error }) => {
+          if (error) toast.error(`Sync failed: ${error.message}`);
+        });
     }
   };
 
@@ -83,7 +88,12 @@ export function HiddenVideosProvider({ children }: { children: ReactNode }) {
       window.localStorage.setItem(SHORTS_LIMIT_KEY, String(clamped));
     } catch {}
     if (user) {
-      void supabase.from("profiles").update({ shorts_limit: clamped }).eq("user_id", user.id);
+      void supabase
+        .from("profiles")
+        .upsert({ user_id: user.id, shorts_limit: clamped }, { onConflict: "user_id" })
+        .then(({ error }) => {
+          if (error) toast.error(`Sync failed: ${error.message}`);
+        });
     }
   };
 
