@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { useHiddenVideos } from "@/contexts/HiddenVideos";
 import { CampaignBanner } from "@/components/CampaignBanner";
+import { useSavedVideos, savedToYTVideo } from "@/contexts/SavedVideos";
+import { useUserTier } from "@/hooks/useUserTier";
 
 export default function Index() {
   const { list } = useSubscriptions();
@@ -23,10 +25,22 @@ export default function Index() {
 
   const feed = useFeed(channelIds);
   const { hiddenIds, showHidden, hideShorts, shortsLimit } = useHiddenVideos();
+  const { list: savedList, showSavedInFeed } = useSavedVideos();
+  const { isSuperuser } = useUserTier();
   const showingHiddenOnly = showHidden && hiddenIds.size > 0;
+  const mergedSource = (() => {
+    if (!(isSuperuser && showSavedInFeed) || savedList.length === 0) return feed.items;
+    const seen = new Set(feed.items.map((v) => v.videoId));
+    const extras = savedList
+      .map(savedToYTVideo)
+      .filter((v) => !seen.has(v.videoId));
+    return [...feed.items, ...extras].sort(
+      (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+    );
+  })();
   const visibleItems = (showHidden
-    ? feed.items.filter((v) => hiddenIds.has(v.videoId))
-    : feed.items.filter((v) => !hiddenIds.has(v.videoId))
+    ? mergedSource.filter((v) => hiddenIds.has(v.videoId))
+    : mergedSource.filter((v) => !hiddenIds.has(v.videoId))
   ).filter((v) => !hideShorts || !isShortVideo(v.duration, shortsLimit * 60));
 
   const allHiddenLoaded =

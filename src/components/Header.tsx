@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useHiddenVideos } from "@/contexts/HiddenVideos";
+import { useSavedVideos } from "@/contexts/SavedVideos";
 import {
   Sheet,
   SheetContent,
@@ -22,6 +23,7 @@ export function Header() {
   const { user, signOut } = useAuth();
   const { tier, isPlus, isSuperuser } = useUserTier();
   const { showHidden, setShowHidden, hideShorts, setHideShorts, shortsLimit, setShortsLimit, list } = useHiddenVideos();
+  const { showSavedInFeed, setShowSavedInFeed, list: savedList } = useSavedVideos();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
@@ -152,6 +154,20 @@ export function Header() {
                     <span className="text-sm text-muted-foreground">minutes</span>
                   </div>
                 )}
+                {isSuperuser && (
+                  <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
+                    <Label htmlFor="show-saved-feed-mobile" className="text-sm cursor-pointer inline-flex items-center gap-2">
+                      <Bookmark className="h-4 w-4 text-muted-foreground" />
+                      Show saved in feed{savedList.length > 0 ? ` (${savedList.length})` : ""}
+                    </Label>
+                    <Switch
+                      id="show-saved-feed-mobile"
+                      checked={showSavedInFeed}
+                      onCheckedChange={setShowSavedInFeed}
+                      aria-label="Show saved videos in home feed"
+                    />
+                  </div>
+                )}
                 <Button
                   variant="ghost"
                   className="w-full justify-start mt-4 px-0"
@@ -227,6 +243,20 @@ export function Header() {
                 </div>
               )}
             </div>
+            {isSuperuser && (
+              <div className="flex items-center gap-2" title="Show saved videos in home feed">
+                <Bookmark className="h-4 w-4 text-muted-foreground" />
+                <Switch
+                  id="show-saved-feed"
+                  checked={showSavedInFeed}
+                  onCheckedChange={setShowSavedInFeed}
+                  aria-label="Show saved videos in home feed"
+                />
+                <Label htmlFor="show-saved-feed" className="text-xs text-muted-foreground cursor-pointer">
+                  Saved{savedList.length > 0 ? ` (${savedList.length})` : ""}
+                </Label>
+              </div>
+            )}
             <Badge
               variant={isPlus ? "default" : "secondary"}
               className="uppercase tracking-wider text-[10px]"

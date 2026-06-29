@@ -1,4 +1,4 @@
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -35,6 +35,8 @@ type Ctx = {
   isSaved: (videoId: string) => boolean;
   save: (v: SavePayload) => void;
   unsave: (videoId: string) => void;
+  showSavedInFeed: boolean;
+  setShowSavedInFeed: (v: boolean) => void;
 };
 
 const SavedVideosContext = createContext<Ctx | null>(null);
@@ -42,6 +44,17 @@ const SavedVideosContext = createContext<Ctx | null>(null);
 export function SavedVideosProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const qc = useQueryClient();
+
+  const [showSavedInFeed, setShowSavedInFeedState] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem("tuubmix.showSavedInFeed") === "true";
+  });
+  const setShowSavedInFeed = (v: boolean) => {
+    setShowSavedInFeedState(v);
+    try {
+      window.localStorage.setItem("tuubmix.showSavedInFeed", String(v));
+    } catch {}
+  };
 
   const list = useQuery({
     queryKey: ["saved_videos", user?.id],
@@ -102,6 +115,8 @@ export function SavedVideosProvider({ children }: { children: ReactNode }) {
     isSaved: (videoId) => savedIds.has(videoId),
     save: (v) => saveMut.mutate(v),
     unsave: (videoId) => unsaveMut.mutate(videoId),
+    showSavedInFeed,
+    setShowSavedInFeed,
   };
 
   return <SavedVideosContext.Provider value={value}>{children}</SavedVideosContext.Provider>;
